@@ -14,13 +14,21 @@
 import sys
 import json
 import urllib
+import argparse
 
+parser = argparse.ArgumentParser()
 
+parser.add_argument("-u", "--url", type=str, help="jenkins url")
+parser.add_argument("-j", "--job", type=str, help="jenkins jobname")
+#parser.add_argument("-v", "--verbosity", type=int, choices=[0,1,2], help="debug output"
+args=parser.parse_args()
 
-jenkins_url = "https://jenkins.int.jumio.com/"
-jenkins_jobname = "sam_monitoring"
+#jenkins_url = "https://jenkins.int.jumio.com/"
+#jenkins_jobname = "sam_monitoring"
 #jenkins_jobname = "ops_puppet_release_internal"
 jenkins_api = "/api/json"
+jenkins_url = args.url
+jenkins_jobname = args.job
 
 data_url= str(jenkins_url) + "job/" + str(jenkins_jobname) + str(jenkins_api)
 
