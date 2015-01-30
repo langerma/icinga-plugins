@@ -23,6 +23,7 @@ parser.add_argument("-j", "--job", type=str, help="jenkins jobname")
 #parser.add_argument("-v", "--verbosity", type=int, choices=[0,1,2], help="debug output"
 args=parser.parse_args()
 
+##### testurls ######
 #jenkins_url = "https://jenkins.int.jumio.com/"
 #jenkins_jobname = "sam_monitoring"
 #jenkins_jobname = "ops_puppet_release_internal"
