@@ -10,3 +10,6 @@ I am working on some cleanup and docu.
 check_jenkins_jobs.py
 =============
 a script designed to get status information about jenkins jobs via API
+script is not fully finished
+
+
