@@ -14,17 +14,3 @@ script is not fully finished
 
 certain cisco plugins test
 ==============
-
-
-
-
-test 123
-
-
-
-
-
-sdfiusdoiufosuifuiosdfu
-baksdshkjashdkhasjkdhaskjdhkasdjkasjdhajkshaskhdhjkad
-
-ydadadadadad
