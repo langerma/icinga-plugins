@@ -4,10 +4,10 @@
 #                           check_jenkins_jobs.py                                  #
 #             script that checks build fails on jenkins jobs                       #
 ####################################################################################
-""" 
-    first approach of checking build status via jenkins json api. 
-    for the moment it works but some work has to be done --> 
-    parameters and cli switches and shit. make it work, make it right, make it fast 
+"""
+    first approach of checking build status via jenkins json api.
+    for the moment it works but some work has to be done -->
+    parameters and cli switches and shit. make it work, make it right, make it fast
 """
 
 
