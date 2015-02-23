@@ -50,7 +50,7 @@ class snmpSessionBaseClass(object):
             cmd = snmpcmd+self.Community+" "+self.DestHost+" "+self.oid+" | cut -d ':' -f 2 | sed 's/ *//'"
             (status, output) = commands.getstatusoutput(cmd)
             if status == 0:
-            	#return int(output.split()[3])
+                #return int(output.split()[3])
                 result = (int(output),)
             else:
             	print "SNMP: problem with snmpget subcommand"
@@ -120,10 +120,9 @@ if __name__ == "__main__":
                 current_connections = current_connections + int(x)
 
         ##### should be implimented properly after test -- with the "n" parameter ######
-		
+
 	maxsessions = int(options.licenselimit)
-		
-	warnstate = maxsessions * 0.80
+    warnstate = maxsessions * 0.80
         critstate = maxsessions * 0.95
 
         warnstate = int(warnstate)
