@@ -119,10 +119,10 @@ if __name__ == "__main__":
         for x in res_tuple_curcon:
                 current_connections = current_connections + int(x)
 
-        ##### should be implimented properly after test -- with the "n" parameter ######
 
-	maxsessions = int(options.licenselimit)
-    warnstate = maxsessions * 0.80
+        ##### should be implimented properly after test -- with the "n" parameter ######
+        maxsessions = int(options.licenselimit)
+        warnstate = maxsessions * 0.80
         critstate = maxsessions * 0.95
 
         warnstate = int(warnstate)

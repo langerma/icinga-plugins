@@ -33,7 +33,7 @@ class snmpSessionBaseClass(object):
 		self.Version = Version
 		self.DestHost = DestHost
 		self.Community = Community
-		
+
 	def query(self):
 		"""Creates SNMP query session"""
 		try:
@@ -44,7 +44,7 @@ class snmpSessionBaseClass(object):
 			cmd = snmpcmd+self.Community+" "+self.DestHost+" "+self.oid+" | cut -d ':' -f 2 | sed 's/ *//'"
 			(status, output) = commands.getstatusoutput(cmd)
 			if status == 0:
-				if output.find("Timeout") == -1: 
+				if output.find("Timeout") == -1:
 					#return int(output.split()[3])
 					result = (int(output),)
 				else:
@@ -53,7 +53,7 @@ class snmpSessionBaseClass(object):
 			else:
 				print "SNMP: problem with snmpget subcommand"
 				sys.exit(3)
-				
+
 		except:
 			print sys.exc_info()
 			result = None
@@ -76,7 +76,8 @@ current_connections = 0
 #############################################################
 # PLUGIN Skeleton
 #############################################################
-	
+
+
 def version():
 	print "Version: 0.1"
 	sys.exit(0)
@@ -103,6 +104,8 @@ def init(argv):
 
 	# Check options
 
+
+
 def check_options(parser):
 	if type(options.community) == NoneType \
 	or type(options.host) == NoneType:
@@ -116,7 +119,6 @@ if __name__ == "__main__":
 	maxcon.DestHost = options.host
 	maxcon.Community = options.community
 	res_tuple_maxcon = maxcon.query()
-	
 	curcon = snmpSessionBaseClass()
 	curcon.oid = oid_currentsessionstring
 	curcon.DestHost = options.host
@@ -128,14 +130,13 @@ if __name__ == "__main__":
 	else:
 		for x in res_tuple_curcon:
 			current_connections = current_connections + int(x)
-	
+
 		maxsessions = int(res_tuple_maxcon[0])
 		warnstate = maxsessions * 0.90
 		critstate = maxsessions * 0.95
-	
 		warnstate = int(warnstate)
 		critstate = int(critstate)
-	
+
 		if current_connections < critstate and current_connections > warnstate:
 			status = "WARNING"
 			perfstring=" | optimized_sessions=" + str(current_connections) + ";" + str(warnstate) + ";" + str(critstate)
