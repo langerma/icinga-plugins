@@ -8,25 +8,15 @@
 import sys
 import json
 import urllib
-import argparse
 
-parser = argparse.ArgumentParser()
+args = sys.argv
 
-parser.add_argument("-H", "--host", type=str, help="elasticsearch host")
-parser.add_argument("-p", "--port", type=str, help="elasticsearch port")
-
-args=parser.parse_args()
-
-elasticsearch_host = args.host
-elasticsearch_port = args.port
+elasticsearch_host = str(args[1])
+elasticsearch_port = str(args[2])
 
 data_url = "http://" + str(elasticsearch_host) + ":" + str(elasticsearch_port) + "/_cluster/health"
 
 elasticsearch_cluster = json.load(urllib.urlopen(data_url))
-
-#print status
-
-#icinga output string
 
 icingaout = "timed out: " + str(elasticsearch_cluster["timed_out"]) + \
     "; nodes: " + str(elasticsearch_cluster["number_of_nodes"]) + \
