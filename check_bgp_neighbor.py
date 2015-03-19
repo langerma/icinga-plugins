@@ -6,7 +6,7 @@
 
 
 ##########################################################
-# i had to use system snmp command because the python libs 
+# i had to use system snmp command because the python libs
 # are not available on my production system...sad but true
 ##########################################################
 
