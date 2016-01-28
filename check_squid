@@ -1,0 +1,263 @@
+#!/usr/bin/perl
+###################################################################
+# check_squid is developped with GPL Licence 2.0
+#
+# GPL License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+#
+# Developped by : Cyril Feraudet
+#
+###################################################################
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#    For information : cyril@feraudet.com
+####################################################################
+
+my $VERSION = "1.1";
+
+$|;
+use Nagios::Plugin;
+# todo : use strict;
+
+
+$np = Nagios::Plugin->new(usage => "Usage: %s [ -v|--verbose ] [ -H <host> ] [ -d <data> ] [ -p <port> ] [ -t <timeout>] [ -c <threshold> ] [ -w <threshold> ]", version => $VERSION);
+
+$np->add_arg(
+	spec => 'host|H=s',
+	help => "-H, --host=<hostname>\n"
+	. "	Name of the proxy to check (default: localhost)",
+	required => 0
+);
+
+$np->add_arg( # Connections Cache Resources Memory FileDescriptors
+	spec => 'data|d=s',
+	help => "-d, --data=<data>\n"
+	. "	Optional data to fetch (default: Connections)"
+	. "	available data : Connections Cache Resources Memory FileDescriptors",
+	required => 0
+);
+
+$np->add_arg(
+	spec => 'port|p=i',
+	help => "-p, --port=<port>\n"
+	. "	Optional port number (default: 3128)",
+	required => 0
+);
+
+$np->add_arg(
+	spec => 'user|U=s',
+	help => "-U, --user=<user>\n"
+	. "	Optional WWW user (default: root)",
+	required => 0
+);
+
+$np->add_arg(
+	spec => 'password|W=s',
+	help => "-W, --password=<password>\n"
+	. "	Optional WWW password",
+	required => 0
+);
+
+$np->add_arg(
+	spec => 'warning|w=s',
+	help => "-w, --warning=THRESHOLD\n"
+	. "	Warning threshold. See\n"
+	. "	http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT\n"
+	. '	for the threshold format.',
+	required => 0,
+);
+
+$np->add_arg(
+	spec => 'critical|c=s',
+	help => "-c, --critical=THRESHOLD\n"
+	. "	Critical threshold. See\n"
+	. "	http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT\n"
+	. '	for the threshold format.',
+	required => 0,
+);
+
+$np->add_arg(
+	spec => 'squidclient|s=s',
+	help => "-s, --squidclient=<squidclient_path>\n"
+	. "	Path of squidclient (default: /usr/sbin/squidclient)",
+	required => 0,
+);
+
+$np->getopts;
+
+my $host = $np->opts->host;
+my $port = $np->opts->port;
+my $data = $np->opts->data;
+my $user = $np->opts->user;
+my $password = $np->opts->password;
+my $critical = $np->opts->critical;
+my $warning = $np->opts->warning;
+my $squidclient = $np->opts->squidclient;
+
+
+$host = 'localhost' if (!defined($host) or $host eq '');
+$port = 3128 if (!defined($port) or $port eq '');
+$data = 'Connections' if (!defined($data) or $data eq '');
+$user = 'root' if (!defined($user) or $user eq '');
+$password = '' if (!defined($password));
+$critical = undef if (defined($critical) and $critical eq '');
+$warning = undef if (defined($warning) and $warning eq '');
+$squidclient = '/usr/local/sbin/squidclient' if (!defined($squidclient) or $squidclient eq '');
+
+$np->set_thresholds(critical => $critical, warning => $warning);
+
+# squidclient -h localhost -p 8080 -U root -W FPSlsker mgr:info
+
+@exec = ("-h", "\Q$host", "-p", "\Q$port", "-U", "\Q$user", "-W", "\Q$password", "mgr:info");
+
+@result = `$squidclient @exec`;
+
+my $fd_available;
+my $fd_used;
+my $memory_available;
+my $memory_used;
+my $connection_nbclient;
+my $connection_nbicpreceived;
+my $connection_nbicpsent;
+my $connection_nbicpqueued;
+my $cache_requesthitratio5;
+my $cache_requesthitratio60;
+my $cache_bytehitratio5;
+my $cache_bytehitratio60;
+for my $line (@result)
+{
+	chomp($line);
+# Connection information for squid:
+#      Number of clients accessing cache:      1203
+	$line =~ /\s+Number of clients accessing cache:\s+([0-9]+)/ and $connection_nbclient = $1;
+#      Number of HTTP requests received:       8892278
+	$line =~ /\s+Number of HTTP requests received:\s+([0-9]+)/ and $connection_nbhttpreceived = $1;
+#      Number of ICP messages received:        0
+	$line =~ /\s+Number of ICP messages received:\s+([0-9]+)/ and $connection_nbicpreceived = $1;
+#      Number of ICP messages sent:    0
+	$line =~ /\s+Number of ICP messages sent:\s+([0-9]+)/ and $connection_nbicpsent = $1;
+#      Number of queued ICP replies:   0
+	$line =~ /\s+Number of queued ICP replies:\s+([0-9]+)/ and $connection_nbicpqueued = $1;
+#      Request failure ratio:   0.00
+#      Average HTTP requests per minute since start:   1247.5
+#      Average ICP messages per minute since start:    0.0
+#      Select loop called: 407414146 times, 1.050 ms avg
+# Cache information for squid:
+#      Request Hit Ratios:     5min: 32.8%, 60min: 33.9%
+	$line =~ /\s+Request Hit Ratios:\s+5min:\s+([0-9\.]+)%,\s+60min:\s+([0-9\.]+)%/ and $cache_requesthitratio5 = $1 and $cache_requesthitratio60 = $2;
+#      Byte Hit Ratios:        5min: 23.7%, 60min: 20.9%
+	$line =~ /\s+Byte Hit Ratios:\s+5min:\s+([0-9\.]+)%,\s+60min:\s+([0-9\.]+)%/ and $cache_bytehitratio5 = $1 and $cache_bytehitratio60 = $2;
+    $line =~ /\s+Hits as % of all requests:\s+5min:\s+([0-9\.]+)%,\s+60min:\s+([0-9\.]+)%/ and $cache_requesthitratio5 = $1 and $cache_requesthitratio60 = $2;
+#      Byte Hit Ratios:        5min: 23.7%, 60min: 20.9%
+    $line =~ /\s+Hits as % of bytes sent:\s+5min:\s+([0-9\.]+)%,\s+60min:\s+([0-9\.]+)%/ and $cache_bytehitratio5 = $1 and $cache_bytehitratio60 = $2;
+#      Request Memory Hit Ratios:      5min: 20.3%, 60min: 24.9%
+#      Request Disk Hit Ratios:        5min: 25.0%, 60min: 23.9%
+#      Storage Swap size:      27694948 KB
+#      Storage Mem size:       614304 KB
+#      Mean Object Size:       26.96 KB
+#      Requests given to unlinkd:      1318030
+# Median Service Times (seconds)  5 min    60 min:
+#      HTTP Requests (All):   0.03622  0.02742
+#      Cache Misses:          0.07825  0.06640
+#      Cache Hits:            0.00091  0.00091
+#      Near Hits:             0.03241  0.04047
+#      Not-Modified Replies:  0.00091  0.00000
+#      DNS Lookups:           0.00094  0.00094
+#      ICP Queries:           0.00000  0.00000
+# Resource usage for squid:
+#      UP Time:        427690.730 seconds
+#      CPU Time:       7524.043 seconds
+#      CPU Usage:      1.76%
+	$line =~ /\s+CPU Usage:\s+([0-9\.]+)%/ and $resource_cpu5s = $1;
+#      CPU Usage, 5 minute avg:        7.99%
+	$line =~ /\s+CPU Usage, 5 minute avg:\s+([0-9\.]+)%/ and $resource_cpu5m = $1;
+#      CPU Usage, 60 minute avg:       10.03%
+	$line =~ /\s+CPU Usage, 60 minute avg:\s+([0-9\.]+)%/ and $resource_cpu60m = $1;
+#      Process Data Segment Size via sbrk(): 875680 KB
+#      Maximum Resident Size: 0 KB
+#      Page faults with physical i/o: 2
+# Memory usage for squid via mallinfo():
+#      Total space in arena:  875812 KB
+#      Ordinary blocks:       811063 KB  97332 blks
+#      Small blocks:               0 KB      0 blks
+#      Holding blocks:          3996 KB      6 blks
+#      Free Small blocks:          0 KB
+#      Free Ordinary blocks:   64748 KB
+#      Total in use:          815059 KB 93%
+	$line =~ /\s+Total in use:\s+([0-9]+)/ and $memory_used = $1;
+#      Total free:             64748 KB 7%
+#      Total size:            879808 KB
+	$line =~ /\s+Total size:\s+([0-9]+)/ and $memory_available = $1;
+# Memory accounted for:
+#      Total accounted:       750343 KB
+#      memPoolAlloc calls: 1149188126
+#      memPoolFree calls: 1144643200
+# File descriptor usage for squid:
+#      Maximum number of file descriptors:   4096
+#      Largest file desc currently in use:    718
+#      Number of file desc currently in use:  692
+#      Files queued for open:                   0
+#      Available number of file descriptors: 3404
+#      Reserved number of file descriptors:   100
+#      Store Disk files open:                   2
+#      IO loop method:                     epoll
+	$line =~ /\s+Maximum number of file descriptors:\s+([0-9]+)/ and $fd_available = $1;
+	$line =~ /\s+Number of file desc currently in use:\s+([0-9]+)/ and $fd_used = $1;
+# Internal Data Structures:
+#      1027146 StoreEntries
+#       50047 StoreEntries with MemObjects
+#       50004 Hot Object Cache Items
+#      1027079 on-disk objects
+}
+
+if($data =~ /Connections/i)  # Connections Cache Resources Memory FileDescriptors
+{
+	$np->add_perfdata( label => "HTTP requests", value => $connection_nbhttpreceived, uom => "c");
+	$np->add_perfdata( label => "sent ICP requests", value => $connection_nbicpsent, uom => "c");
+	$np->add_perfdata( label => "received ICP requests", value => $connection_nbicpreceived, uom => "c");
+	$np->nagios_exit('OK', "Squid have $connection_nbclient clients and $connection_nbicpqueued ICP requests queued");
+}
+if($data =~ /Cache/i)
+{
+	$np->add_perfdata( label => "Requests Hit Ratio 5min", value => $cache_requesthitratio5, uom => "%");
+	$np->add_perfdata( label => "Requests Hit Ratio 60min", value => $cache_requesthitratio60, uom => "%");
+	$np->add_perfdata( label => "Byte Hit Ratio 5min", value => $cache_bytehitratio5, uom => "%");
+	$np->add_perfdata( label => "Byte Hit Ratio 60min", value => $cache_bytehitratio60, uom => "%");
+	$np->nagios_exit('OK', "Requests Hit Ratio 5min: $cache_requesthitratio5, Requests Hit Ratio 60min: $cache_requesthitratio60, Byte Hit Ratio 5min: $cache_bytehitratio5, Byte Hit Ratio 60min: $cache_bytehitratio60");
+}
+if($data =~ /Resources/i)
+{
+	$np->add_perfdata( label => "CPU used 5s", value => $resource_cpu5s, uom => "%");
+	$np->add_perfdata( label => "CPU used 5m", value => $resource_cpu5m, uom => "%");
+	$np->add_perfdata( label => "CPU used 60m", value => $resource_cpu60m, uom => "%");
+	$np->nagios_exit('OK', "CPU used 5s: $resource_cpu5s, CPU used 5m: $resource_cpu5m, CPU used 60m: $resource_cpu60m");
+}
+if($data =~ /Memory/i)
+{
+	my $t = Nagios::Plugin::Threshold->set_thresholds(warning  => $warning, critical => $critical);
+	$np->add_perfdata( label => "Memory used", value => $memory_used, uom => "KB", threshold => $t);
+	$np->add_perfdata( label => "Memory available", value => $memory_available, uom => "KB");
+	$np->nagios_exit($np->check_threshold($memory_used), "Squid use $memory_used KB of memory");
+}
+if($data =~ /FileDescriptors/i)
+{
+	my $t = Nagios::Plugin::Threshold->set_thresholds(warning  => $warning, critical => $critical);
+	$np->add_perfdata( label => "Max FD", value => $fd_available);
+	$np->add_perfdata( label => "Cur FD", value => $fd_used, threshold => $t);
+	$np->nagios_exit($np->check_threshold($fd_used), 'Squid work fine.');
+}
+
+
+
+# $np->nagios_exit('OK', $output);
+# $np->nagios_exit('WARNING', $output);
+# $np->nagios_exit('CRITICAL', $output);
+# $np->nagios_exit('UNKNOWN', $output);
+# $np->nagios_exit('DEPENDENT', $output);
