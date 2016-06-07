@@ -84,16 +84,16 @@ def field():
     #json.load(urllib.urlopen(elasticsearch, data=searchstring))
     pass
 
-#def main():
-#    try:
-#        elasticsearch_check = str(args[1])
-#        if elasticsearch_check == "health":
-#            #elasticsearch_host = str(args[2])
-#            #elasticsearch_port = str(args[3])
-#            health(str(args[2]),str(args[3]))
-#    except:
-#        print "shit happens -- too few parameters"
-#        sys.exit(5)
+    #def main():
+    #    try:
+    #        elasticsearch_check = str(args[1])
+    #        if elasticsearch_check == "health":
+    #            #elasticsearch_host = str(args[2])
+    #            #elasticsearch_port = str(args[3])
+    #            health(str(args[2]),str(args[3]))
+    #    except:
+    #        print "shit happens -- too few parameters"
+    #        sys.exit(5)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Icinga check for elasticsearch')
