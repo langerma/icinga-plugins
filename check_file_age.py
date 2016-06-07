@@ -3,6 +3,7 @@
 ###############################################################################
 #                             check_file_age.py                               #
 #                       (c) langer.markus@gmail.com                           #
+#     checks the age of files and paths you also can add a threshold          #
 ###############################################################################
 
 import sys
