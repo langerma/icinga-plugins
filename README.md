@@ -20,7 +20,7 @@ check_file_age.py
 
 a plugin to check file age with different methods:
 
-usage: Icinga check for fileage [-h] --filename FILENAME [--text TEXT]
+    usage: Icinga check for fileage [-h] --filename FILENAME [--text TEXT]
                                 [--method {modified,accessed,metadata}]
                                 [--warning WARNING] [--critical CRITICAL]
 
