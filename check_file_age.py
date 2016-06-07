@@ -56,8 +56,8 @@ if  __name__ == '__main__':
     parser.add_argument('--filename', required=True, help='filename or path')
     parser.add_argument('--text', default='last modified on: ', help='Custom Text (e.g. last modified on:)')
     parser.add_argument('--method', default='modified', choices=['modified','accessed','metadata'], help='Method what you want to check')
-    parser.add_argument('--warning', default=24, help='Warning threshold in hours')
-    parser.add_argument('--critical', default=48, help='Critical threshold in hours')
+    parser.add_argument('--warning', default=24, type=int, help='Warning threshold in hours')
+    parser.add_argument('--critical', default=48, type=int, help='Critical threshold in hours')
     args = parser.parse_args()
     check(filename=args.filename,
             text=args.text,
