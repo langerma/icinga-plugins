@@ -2,7 +2,8 @@
 
 #################################################################################
 #                          check_elasticsearch.py                               #
-#       script to check cluster and nodestates of elasticsearch                 #
+#               script to check health of elasticsearch_cluster                 #
+#           it is also possible to check a query and set thresholds             #
 #################################################################################
 
 '''
@@ -16,7 +17,6 @@ import sys
 import json
 import urllib
 import argparse
-import pprint
 
 def health(data_url):
     elasticsearch_cluster = json.load(urllib.urlopen(str(data_url) + '/_cluster/health'))
@@ -66,17 +66,17 @@ def metric(data_url, query, critical, warning, duration):
     if hits < critical and hits > warning:
         status = "WARNING"
         perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
         sys.exit(1)
     elif hits > warning and hits > critical:
         status = "CRITCAL"
         perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
         sys.exit(2)
     elif hits < warning and hits < critical:
         status = "OK"
         perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
         sys.exit(0)
 
 if __name__ == '__main__':
@@ -87,8 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('--uri', help='Uri for elasticsearch for example /elasticsearch')
     parser.add_argument('--command', default='health', choices=['health','metric'], help='check command')
     parser.add_argument('--query', help='e.g: source:localhorst AND message:login failed')
-    parser.add_argument('--critical', help='Critical threshold, e.g. 1, 100')
-    parser.add_argument('--warning', help='Warning threshold, e.g. 1, 20')
+    parser.add_argument('--critical', type=int, help='Critical threshold, e.g. 1, 100')
+    parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
     args = parser.parse_args()
     try:
