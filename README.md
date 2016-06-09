@@ -33,3 +33,28 @@ a plugin to check file age with different methods:
                     --warning WARNING     Warning threshold in hours
                     --critical CRITICAL   Critical threshold in hours
 
+check_elasticsearch_cluster.py
+==============
+
+a plugin to check the health of an elasticsearch cluster,
+you also can fire up queries and set thresholds for example: failed logins, etc.
+
+
+    usage: Icinga check for elasticsearch [-h] --host HOST [--port PORT]
+                                [--uri URI] [--command {health,metric}]
+                                [--query QUERY] [--critical CRITICAL]
+                                [--warning WARNING]
+                                [--duration DURATION]
+
+                                optional arguments:
+                    -h, --help            show this help message and exit
+                    --host HOST           elasticsearch host
+                    --port PORT           port that elasticsearch is running on (eg. 9200)
+                    --uri URI             Uri for elasticsearch for example /elasticsearch
+                    --command {health,metric}
+                                        check command
+                    --query QUERY         e.g: source:localhorst AND message:login failed
+                    --critical CRITICAL   Critical threshold, e.g. 1, 100
+                    --warning WARNING     Warning threshold, e.g. 1, 20
+                    --duration DURATION   e.g: 1h, 15m, 32d
+
