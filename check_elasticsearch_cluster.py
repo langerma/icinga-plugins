@@ -62,7 +62,22 @@ def metric(data_url, query, critical, warning, duration):
             "from":0}'
 
     query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
-    pprint.pprint(query_data)
+    hits = int(query_data['hits']['total'])
+    if hits < critical and hits > warning:
+        status = "WARNING"
+        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
+        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        sys.exit(1)
+    elif hits > warning and hits > critical:
+        status = "CRITCAL"
+        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
+        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        sys.exit(2)
+    elif hits < warning and hits < critical:
+        status = "OK"
+        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
+        print "Hits on query " + status + " " + str(datetime.timedelta(seconds=timedelta)) + ";" + perfstring
+        sys.exit(0)
 
 if __name__ == '__main__':
     # request parameters for script
