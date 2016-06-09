@@ -10,46 +10,6 @@
 check_elasticsearch_cluster.py
 Copyright (C) 2016  langer.markus@gmail.com
 
-# simple searchstring for timerange
-
-{
-    "range" : {
-        "timestamp" : {"gt" : "now-1h"}
-    }
-}
-
-# combined searchstring 
-
-{
-    "query": {
-        "filtered": {
-            "query": {
-                "match_all": {}
-            },
-            "filter": {
-                "and": [
-                    {
-                        "range" : {
-                            "timestamp" : { 
-                                "gt" : "now-15m"
-                            }
-                        },
-                    },
-                    {
-                        "term": {
-                            "field": "value"
-                        }
-                    }
-                ]
-            }
-        }
-    }
-}
-
-json.load(urllib.urlopen('http://www.langerma.org/elasticsearch/_search?search_type=count', data='searchstring'))
-
-
-
 '''
 
 import sys
@@ -79,10 +39,29 @@ def health(data_url):
         print "Cluster: " + str(elasticsearch_cluster["status"])+ " | " + str(icingaout)
         sys.exit(0)
 
-def metric(data_url, field, value, critical, warning, duration):
-    searchstring = '{"sort": {"date": "asc"}}'
+def metric(data_url, query, critical, warning, duration):
+    searchstring = '{\
+            "query":{\
+                "filtered":{\
+                    "query":{ \
+                        "query_string":{\
+                            "query":"' + query + '",\
+                            "default_field":"_all"\
+                        }\
+                    },\
+                    "filter":{\
+                        "range":{\
+                            "@timestamp":{\
+                                "from":"now-' + duration + '",\
+                                "to":"now"\
+                            }\
+                        }\
+                    }\
+                }\
+            },\
+            "from":0}'
 
-    query_data = json.load(urllib.urlopen(str(data_url) + '/_all/_search' , data=searchstring))
+    query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
     pprint.pprint(query_data)
 
 if __name__ == '__main__':
@@ -92,11 +71,10 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=9200, help='port that elasticsearch is running on (eg. 9200)')
     parser.add_argument('--uri', help='Uri for elasticsearch for example /elasticsearch')
     parser.add_argument('--command', default='health', choices=['health','metric'], help='check command')
-    parser.add_argument('--field', help='Field you want to check e.g. logins_failed')
-    parser.add_argument('--value', help='Query this value')
+    parser.add_argument('--query', help='e.g: source:localhorst AND message:login failed')
     parser.add_argument('--critical', help='Critical threshold, e.g. 1, 100')
     parser.add_argument('--warning', help='Warning threshold, e.g. 1, 20')
-    parser.add_argument('--duration', default=5, help='e.g: 1h, 15m, 32d')
+    parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
     args = parser.parse_args()
     try:
         data_url = "http://" + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
@@ -104,6 +82,6 @@ if __name__ == '__main__':
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.field, args.value, args.critical, args.warning, args.duration)
+        metric(data_url, args.query, args.critical, args.warning, args.duration)
     else:
         health(data_url)
