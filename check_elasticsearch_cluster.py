@@ -18,6 +18,13 @@ import json
 import urllib
 import argparse
 
+# icinga returncode vars
+EXIT_OK         = 0
+EXIT_WARNING    = 1
+EXIT_CRITICAL   = 2
+EXIT_UNKNOWN    = 3
+
+# check the health
 def health(data_url):
     elasticsearch_cluster = json.load(urllib.urlopen(str(data_url) + '/_cluster/health'))
     icingaout = "timed out: " + str(elasticsearch_cluster["timed_out"]) + \
@@ -39,7 +46,8 @@ def health(data_url):
         print "Cluster: " + str(elasticsearch_cluster["status"])+ " | " + str(icingaout)
         sys.exit(0)
 
-def metric(data_url, query, critical, warning, duration):
+# check a query
+def metric(data_url, query, critical, warning, invert, duration):
     searchstring = '{\
             "query":{\
                 "filtered":{\
@@ -63,21 +71,49 @@ def metric(data_url, query, critical, warning, duration):
 
     query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
-    if hits < critical and hits > warning:
-        status = "WARNING"
-        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
-        sys.exit(1)
-    elif hits > warning and hits > critical:
-        status = "CRITCAL"
-        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
-        sys.exit(2)
-    elif hits < warning and hits < critical:
-        status = "OK"
-        perfstring=" | current_age=" + str(hits) + ";" + str(warning) + ";" + str(critical)
-        print "Hits on query " + status + " " + str(hits) + ";" + perfstring
-        sys.exit(0)
+    message = '%s = %s (over %s )' % (query, hits, duration)
+    message = message.replace('|', '_') # everything after | is "performance info"
+    info = 'critical %s %s' % ('<' if invert else '>', critical)
+    if warning is not None:
+        info += '\nwarning %s %s' % ('<' if invert else '>', warning)
+
+    if invert:
+        if hits < critical:
+            critical_exit(message, info)
+        if hits < warning:
+            warning_exit(message, info)
+    else:
+        if hits > critical:
+            critical_exit(message, info)
+        if hits > warning:
+            warning_exit(message, info)
+
+    ok_exit(message)
+
+# icinga returncode functions
+def critical_exit(message, info=None):
+    print 'CRITICAL %s' % message
+    if info:
+        print '\n%s' % info
+    sys.exit(EXIT_CRITICAL)
+
+def warning_exit(message, info=None):
+    print 'WARNING %s' % message
+    if info:
+        print '\n%s' % info
+    sys.exit(EXIT_WARNING)
+
+def ok_exit(message, info=None):
+    print 'OK %s' % message
+    if info:
+        print '\n%s' % info
+    sys.exit(EXIT_OK)
+
+def unknown_exit(message, info=None):
+    print 'UNKNOWN %s' % message
+    if info:
+        print '\n%s' % info
+    sys.exit(EXIT_UNKNOWN)
 
 if __name__ == '__main__':
     # request parameters for script
@@ -89,6 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--query', help='e.g: source:localhorst AND message:login failed')
     parser.add_argument('--critical', type=int, help='Critical threshold, e.g. 1, 100')
     parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
+    parser.add_argument('--invert', action='store_true', help='Invert the check so that an alert is triggered if the value falls below the threshold. Invert is implied if warning threshold > critical threshold')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
     args = parser.parse_args()
     try:
@@ -97,6 +134,6 @@ if __name__ == '__main__':
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.query, args.critical, args.warning, args.duration)
+        metric(data_url, args.query, args.critical, args.warning, args.invert, args.duration)
     else:
         health(data_url)
