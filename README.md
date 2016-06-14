@@ -40,7 +40,7 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
     usage: Icinga check for elasticsearch [-h] --host HOST [--port PORT]
                                 [--uri URI] [--command {health,metric}]
                                 [--query QUERY] [--critical CRITICAL]
-                                [--warning WARNING]
+                                [--warning WARNING] [--invert]
                                 [--duration DURATION]
 
                                 optional arguments:
@@ -53,5 +53,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                     --query QUERY         e.g: source:localhorst AND message:login failed
                     --critical CRITICAL   Critical threshold, e.g. 1, 100
                     --warning WARNING     Warning threshold, e.g. 1, 20
+                    --invert              Invert the check so that an alert is triggered if the
+                                          value falls below the threshold. Invert is implied if
+                                          warning threshold > critical threshold
                     --duration DURATION   e.g: 1h, 15m, 32d
 
