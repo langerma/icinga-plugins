@@ -35,16 +35,13 @@ def health(data_url):
         "; relocating shards: " + str(elasticsearch_cluster["relocating_shards"]) + \
         "; init shards: " + str(elasticsearch_cluster["initializing_shards"]) + \
         "; unassigned shards: " + str(elasticsearch_cluster["unassigned_shards"])
-
+    message = ': Cluster: ' + str(elasticsearch_cluster["status"]) + ' | ' + str(icingaout)
     if elasticsearch_cluster["status"] == "red":
-        print "Cluster: " + str(elasticsearch_cluster["status"])+ " | " + str(icingaout)
-        sys.exit(2)
+        critical_exit(message, info=None)
     elif elasticsearch_cluster["status"] == "orange":
-        print "Cluster: " + str(elasticsearch_cluster["status"])+ " | " + str(icingaout)
-        sys.exit(1)
+        warning_exit(message, info=None)
     elif elasticsearch_cluster["status"] == "green":
-        print "Cluster: " + str(elasticsearch_cluster["status"])+ " | " + str(icingaout)
-        sys.exit(0)
+        ok_exit(message, info=None)
 
 # check a query
 def metric(data_url, query, critical, warning, invert, duration):
@@ -71,8 +68,7 @@ def metric(data_url, query, critical, warning, invert, duration):
 
     query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
-    message = '%s = %s (over %s )' % (query, hits, duration)
-    message = message.replace('|', '_') # everything after | is "performance info"
+    message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
     info = 'critical %s %s' % ('<' if invert else '>', critical)
     if warning is not None:
         info += '\nwarning %s %s' % ('<' if invert else '>', warning)
