@@ -18,14 +18,13 @@ description is coming soon
 
 a plugin to check file age with different methods:
 
-    usage: Icinga check for fileage [-h] --filename FILENAME [--text TEXT]
+    usage: Icinga check for fileage [-h] --filename FILENAME
                                 [--method {modified,accessed,metadata}]
                                 [--warning WARNING] [--critical CRITICAL]
 
                                 optional arguments:
                     -h, --help            show this help message and exit
                     --filename FILENAME   filename or path
-                    --text TEXT           Custom Text (e.g. last modified on:)
                     --method {modified,accessed,metadata}
                                           Method what you want to check
                     --warning WARNING     Warning threshold in hours
