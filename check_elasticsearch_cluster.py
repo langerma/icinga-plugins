@@ -31,11 +31,11 @@ def health(data_url):
     % (es['timed_out'],es['number_of_nodes'],es['number_of_data_nodes'],es['active_primary_shards'],es['active_shards'],es['relocating_shards'],es['initializing_shards'],es['unassigned_shards'])
     message = ': Cluster: %s | %s' % (es['status'], icingaout)
     if es["status"] == "red":
-        critical_exit(message, info=None)
+        critical_exit(message)
     elif es["status"] == "orange":
-        warning_exit(message, info=None)
+        warning_exit(message)
     elif es["status"] == "green":
-        ok_exit(message, info=None)
+        ok_exit(message)
 
 # check a query
 def metric(data_url, query, critical, warning, invert, duration):
@@ -63,46 +63,35 @@ def metric(data_url, query, critical, warning, invert, duration):
     query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
     message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
-    info = 'critical %s %s' % ('<' if invert else '>', critical)
-    if warning is not None:
-        info += '\nwarning %s %s' % ('<' if invert else '>', warning)
 
     if invert:
         if hits < critical:
-            critical_exit(message, info)
+            critical_exit(message)
         if hits < warning:
-            warning_exit(message, info)
+            warning_exit(message)
     else:
         if hits > critical:
-            critical_exit(message, info)
+            critical_exit(message)
         if hits > warning:
-            warning_exit(message, info)
+            warning_exit(message)
 
     ok_exit(message)
 
 # icinga returncode functions
-def critical_exit(message, info=None):
+def critical_exit(message):
     print 'CRITICAL %s' % message
-    if info:
-        print '\n%s' % info
     sys.exit(EXIT_CRITICAL)
 
-def warning_exit(message, info=None):
+def warning_exit(message):
     print 'WARNING %s' % message
-    if info:
-        print '\n%s' % info
     sys.exit(EXIT_WARNING)
 
-def ok_exit(message, info=None):
+def ok_exit(message):
     print 'OK %s' % message
-    if info:
-        print '\n%s' % info
     sys.exit(EXIT_OK)
 
-def unknown_exit(message, info=None):
+def unknown_exit(message):
     print 'UNKNOWN %s' % message
-    if info:
-        print '\n%s' % info
     sys.exit(EXIT_UNKNOWN)
 
 if __name__ == '__main__':
