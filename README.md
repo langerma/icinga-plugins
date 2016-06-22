@@ -38,7 +38,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
 
     usage: Icinga check for elasticsearch [-h] --host HOST [--port PORT]
                                 [--uri URI] [--command {health,metric}]
-                                [--query QUERY] [--critical CRITICAL]
+                                [--index INDEX] [--query QUERY]
+                                [--critical CRITICAL]
                                 [--warning WARNING] [--invert]
                                 [--duration DURATION]
 
@@ -49,6 +50,7 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                     --uri URI             Uri for elasticsearch for example /elasticsearch
                     --command {health,metric}
                                         check command
+                    --index INDEX         the index you want to query for example logstash-*
                     --query QUERY         e.g: source:localhorst AND message:login failed
                     --critical CRITICAL   Critical threshold, e.g. 1, 100
                     --warning WARNING     Warning threshold, e.g. 1, 20
