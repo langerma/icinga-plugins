@@ -38,7 +38,7 @@ def health(data_url):
         ok_exit(message)
 
 # check a query
-def metric(data_url, query, critical, warning, invert, duration):
+def metric(data_url, index, query, critical, warning, invert, duration):
     searchstring = '{\
             "query":{\
                 "filtered":{\
@@ -60,7 +60,7 @@ def metric(data_url, query, critical, warning, invert, duration):
             },\
             "from":0}'
 
-    query_data = json.load(urllib.urlopen(str(data_url) + '/logstash-*/_search?search_type=count' , data=searchstring))
+    query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
     message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
 
@@ -99,8 +99,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('Icinga check for elasticsearch')
     parser.add_argument('--host', required=True, help='elasticsearch host')
     parser.add_argument('--port', type=int, default=9200, help='port that elasticsearch is running on (eg. 9200)')
-    parser.add_argument('--uri', help='Uri for elasticsearch for example /elasticsearch')
+    parser.add_argument('--uri', default='', help='Uri for elasticsearch for example /elasticsearch')
     parser.add_argument('--command', default='health', choices=['health','metric'], help='check command')
+    parser.add_argument('--index', default='logstash-*', help='the index you want to query for example logstash-*')
     parser.add_argument('--query', help='e.g: source:localhorst AND message:login failed')
     parser.add_argument('--critical', type=int, help='Critical threshold, e.g. 1, 100')
     parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
@@ -113,6 +114,6 @@ if __name__ == '__main__':
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.query, args.critical, args.warning, args.invert, args.duration)
+        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration)
     else:
         health(data_url)
