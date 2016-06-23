@@ -1,0 +1,18 @@
+name: check_elasticsearch_cluster.py
+description: "file:///README.md"
+url: "https://github.com/langerma/icinga-plugins"
+tags: Elasticsearch
+vendor: Elasticsearch
+target: Elasticsearch
+type: Plugin
+license: gplv3
+releases:
+    -
+        name: 1.0
+        description: "1.0 Release"
+        files:
+            -
+                name: check_elasticsearch_cluster.py
+                url: "file:///check_elasticsearch_cluster.py"
+                description: "First release"
+                checksum: e73bacf2a973ad2c608c6c59b077f16d
