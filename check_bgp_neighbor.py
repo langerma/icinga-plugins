@@ -60,51 +60,50 @@ def check_options(parser):
 		sys.exit()
 
 if __name__ == "__main__":
-        init(sys.argv[1:])
-
+    init(sys.argv[1:])
     oid = ".1.3.6.1.2.1.15.3.1.2." + options.bgpneighbor
-	#oid_netsnmp = netsnmp.Varbind(oid)
-	cmd = snmpgetcmd+options.community+" "+options.host+" "+oid+" | cut -d ':' -f 2 | sed 's/ *//'"
-	#result_bgpstatus = netsnmp.snmpget(oid_netsnmp, Version = 2, DestHost = options.host, Community = options.community)
-	(status, output) = commands.getstatusoutput(cmd)
-	if status == 0:
-		if output.find("Timeout") == -1:
-			if output.find("exists") == -1:
-				#return int(output.split()[3])
-				result_bgpstatus = (int(output),)
-			else:
-				print "SNMP: Timeout"
-				sys.exit(3)
-		else:
-			print "SNMP: Timeout"
-			sys.exit(3)
-	else:
-		print "SNMP: problem with snmpget subcommand"
-		sys.exit(1)
+    #oid_netsnmp = netsnmp.Varbind(oid)
+    cmd = snmpgetcmd+options.community+" "+options.host+" "+oid+" | cut -d ':' -f 2 | sed 's/ *//'"
+    #result_bgpstatus = netsnmp.snmpget(oid_netsnmp, Version = 2, DestHost = options.host, Community = options.community)
+    (status, output) = commands.getstatusoutput(cmd)
+    if status == 0:
+	    if output.find("Timeout") == -1:
+		    if output.find("exists") == -1:
+			    #return int(output.split()[3])
+			    result_bgpstatus = (int(output),)
+		    else:
+			    print "SNMP: Timeout"
+			    sys.exit(3)
+	    else:
+		    print "SNMP: Timeout"
+		    sys.exit(3)
+    else:
+	    print "SNMP: problem with snmpget subcommand"
+	    sys.exit(1)
 
-        oid = ".1.3.6.1.4.1.9.9.187.1.2.4.1.1." + options.bgpneighbor + ".1.1"
-        #oid_netsnmp = netsnmp.Varbind(oid)
-        cmd = snmpgetcmd+options.community+" "+options.host+" "+oid+" | cut -d ':' -f 2 | sed 's/ *//'"
-	#result_bgpprefixes = netsnmp.snmpget(oid_netsnmp, Version = 2, DestHost = options.host, Community = options.community)
-        (status, output) = commands.getstatusoutput(cmd)
-	if status == 0:
-		if output.find("Timeout") == -1:
-                	#return int(output.split()[3])
-                	result_bgpprefixes = (int(output),)
-		else:
-			print "SNMP: Timeout"
-			sys.exit(3)
-        else:
-                print "SNMP: problem with snmpget subcommand"
-                sys.exit(1)
+    oid = ".1.3.6.1.4.1.9.9.187.1.2.4.1.1." + options.bgpneighbor + ".1.1"
+    #oid_netsnmp = netsnmp.Varbind(oid)
+    cmd = snmpgetcmd+options.community+" "+options.host+" "+oid+" | cut -d ':' -f 2 | sed 's/ *//'"
+    #result_bgpprefixes = netsnmp.snmpget(oid_netsnmp, Version = 2, DestHost = options.host, Community = options.community)
+    (status, output) = commands.getstatusoutput(cmd)
+    if status == 0:
+	    if output.find("Timeout") == -1:
+                    #return int(output.split()[3])
+                    result_bgpprefixes = (int(output),)
+	    else:
+		    print "SNMP: Timeout"
+		    sys.exit(3)
+    else:
+            print "SNMP: problem with snmpget subcommand"
+            sys.exit(1)
 
-	if (int(result_bgpstatus[0]) == 6) and (int(result_bgpprefixes[0]) > 10):
-		status = "OK"
-		perfstring=" | known_prefixes=" + str(result_bgpprefixes[0])
-		print "BGP Session Status for neighbor " + options.bgpneighbor + " is " + status + " - known prefixes " + str(result_bgpprefixes[0]) + ";" + perfstring
-		sys.exit(0)
-	else:
-		status = "CRITCAL"
-               	perfstring=" | known_prefixes=" + str(result_bgpprefixes[0])
-               	print "BGP Session Status for neighbor " + options.bgpneighbor + " is " + status + " - known prefixes " + str(result_bgpprefixes[0]) + ";" + perfstring
-		sys.exit(2)
+    if (int(result_bgpstatus[0]) == 6) and (int(result_bgpprefixes[0]) > 10):
+	    status = "OK"
+	    perfstring=" | known_prefixes=" + str(result_bgpprefixes[0])
+	    print "BGP Session Status for neighbor " + options.bgpneighbor + " is " + status + " - known prefixes " + str(result_bgpprefixes[0]) + ";" + perfstring
+	    sys.exit(0)
+    else:
+	    status = "CRITCAL"
+            perfstring=" | known_prefixes=" + str(result_bgpprefixes[0])
+            print "BGP Session Status for neighbor " + options.bgpneighbor + " is " + status + " - known prefixes " + str(result_bgpprefixes[0]) + ";" + perfstring
+	    sys.exit(2)
