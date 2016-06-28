@@ -52,7 +52,7 @@ def fetch_cached_stats(hostname, pollerInterval, tmpdir):
         pass
 
 def fetch_stats(argsList):
-    squid5min = subprocess.Popen(argsList + ' mgr:5min', stdout=subprocess.PIPE).communicate()[0]
+    squid5min = subprocess.Popen(argsList + ['mgr:5min'], stdout=subprocess.PIPE).communicate()[0]
     if len(squid5min):
         return squid5min
     else:
@@ -304,7 +304,7 @@ if __name__ == '__main__':
 
     cachedStats = fetch_cached_stats(args.hostname, args.interval, args.tmpdir)
 
-    argsList = str(args.squidclient) + ' -h ' + str(args.hostname) + ' -l ' + str(args.bind)
+    argsList = [str(args.squidclient), '-h', str(args.hostname), '-l', str(args.bind)]
     if cachedStats:
         output_stats(filter_stats(cachedStats, args.query))
     else:
