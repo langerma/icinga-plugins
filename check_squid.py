@@ -60,6 +60,30 @@ def fetch_stats(argsList):
 
 def filter_stats(stats, query):
     queries = {
+        "icp-packets": [
+            "icp.pkts_sent",
+            "icp.pkts_recv",
+        ],
+        "icp-requests": [
+            "icp.queries_sent",
+            "icp.queries_recv",
+            "icp.replies_sent",
+            "icp.replies_recv",
+            "icp.replies_queued",
+            "icp.query_timeouts",
+        ],
+        "icp-transfer": [
+            "icp.kbytes_sent",
+            "icp.kbytes_recv",
+            "icp.q_kbytes_sent",
+            "icp.q_kbytes_recv",
+            "icp.r_kbytes_sent",
+            "icp.r_kbytes_recv",
+        ],
+        "icp-svctime": [
+            "icp.query_median_svc_time",
+            "icp.reply_median_svc_time",
+        ],
         "requests": [
             "aborted_requests",
             "client_http.requests",
@@ -129,6 +153,11 @@ def filter_stats(stats, query):
             "select_fds",
             "average_select_fd_period",
             "median_select_fds",
+        ],
+        "cpu": [
+            "cpu_time",
+            "wall_time",
+            "cpu_usage",
         ],
     }
     filteredStats = {}
