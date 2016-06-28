@@ -24,7 +24,7 @@ parser.add_argument("-j", "--job", type=str, help="jenkins jobname")
 args=parser.parse_args()
 
 ##### testurls ######
-#jenkins_url = "https://jenkins.int.jumio.com/"
+#jenkins_url = "https://jenkins.somewhere.com/"
 #jenkins_jobname = "sam_monitoring"
 #jenkins_jobname = "ops_puppet_release_internal"
 jenkins_api = "/api/json"
