@@ -36,7 +36,7 @@ def cache_stats(stats, hostname, tmpdir):
     except:
         pass
 
-def fetch_cached_stats(hostname, pollerinterval, tmpdir):
+def fetch_cached_stats(hostname, pollerInterval, tmpdir):
     mtime = 0
     cacheFile = tmpdir + '/' + hostname
     cacheLifetime = pollerInterval * 0.75
