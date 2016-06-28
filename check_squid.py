@@ -298,11 +298,11 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=3128, help='Port number of cache.  Default is 3128.')
     parser.add_argument('--timeout', type=int, default=10, help='Timeout value (seconds) for read/write operations.')
     parser.add_argument('--squidclientargs', default='', help='options for squidguard, like auth and password')
-    parser.add_argument('--interval', type=int, default=300, help='The polling interval in seconds used by icinga')
+    parser.add_argument('--interval', required=True, type=int, default=300, help='The polling interval in seconds used by icinga')
     parser.add_argument('--query', help="The query to run")
     args = parser.parse_args()
 
-    cachedStats = fetch_cached_stats(args.hostname, args.pollerInterval, args.tmpdir)
+    cachedStats = fetch_cached_stats(args.hostname, args.interval, args.tmpdir)
 
     if cachedStats:
         output_stats(filter_stats(cachedStats, args.query))
