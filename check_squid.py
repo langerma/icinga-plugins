@@ -299,7 +299,7 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=int, default=10, help='Timeout value (seconds) for read/write operations.')
     parser.add_argument('--squidclientargs', default='', help='options for squidguard, like auth and password')
     parser.add_argument('--interval', type=int, default=300, help='The polling interval in seconds used by icinga')
-    parser.add_argument('--query', help="The query to run")
+    parser.add_argument('--query', default=None, help="The query to run")
     args = parser.parse_args()
 
     cachedStats = fetch_cached_stats(args.hostname, args.interval, args.tmpdir)
