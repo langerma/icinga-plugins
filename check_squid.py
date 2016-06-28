@@ -52,7 +52,7 @@ def fetch_cached_stats(hostname, pollerInterval, tmpdir):
         pass
 
 def fetch_stats(argsList):
-    squid5min = subprocess.Popen(argsList + ['mgr:5min'], stdout=subprocess.PIPE).communicate()[0]
+    squid5min = subprocess.Popen(argsList + " " + ['mgr:5min'], stdout=subprocess.PIPE).communicate()[0]
     if len(squid5min):
         return squid5min
     else:
@@ -298,12 +298,13 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=3128, help='Port number of cache.  Default is 3128.')
     parser.add_argument('--timeout', type=int, default=10, help='Timeout value (seconds) for read/write operations.')
     parser.add_argument('--squidclientargs', default='', help='options for squidguard, like auth and password')
-    parser.add_argument('--interval', required=True, type=int, default=300, help='The polling interval in seconds used by icinga')
+    parser.add_argument('--interval', type=int, default=300, help='The polling interval in seconds used by icinga')
     parser.add_argument('--query', help="The query to run")
     args = parser.parse_args()
 
     cachedStats = fetch_cached_stats(args.hostname, args.interval, args.tmpdir)
 
+    argsList = str(args.squidclient) + ' -h ' + str(args.hostname) + ' -l ' + str(args.bind)
     if cachedStats:
         output_stats(filter_stats(cachedStats, args.query))
     else:
