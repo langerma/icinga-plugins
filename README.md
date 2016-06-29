@@ -34,13 +34,13 @@ a plugin to check file age with different methods:
                                           Method what you want to check
                     --warning WARNING     Warning threshold in hours
                     --critical CRITICAL   Critical threshold in hours
-´´´
+```
 check_elasticsearch_cluster.py
 -------------------------
 a plugin to check the health of an elasticsearch cluster,
 you also can fire up queries and set thresholds for example: failed logins, etc.
 
-
+```
     usage: Icinga check for elasticsearch [-h] --host HOST [--port PORT]
                                 [--uri URI] [--command {health,metric}]
                                 [--index INDEX] [--query QUERY]
@@ -63,13 +63,13 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                                           value falls below the threshold. Invert is implied if
                                           warning threshold > critical threshold
                     --duration DURATION   e.g: 1h, 15m, 32d
-
+```
 check_squid.py
 -------------------------
 a plugin to check different metrics from squid proxy server over squid client.
 i want do get rid of squidclient and implement that in pure python to not have a dependencie.
 
-
+```
     usage: Icinga check for Squid Proxy Server [-h] [--squidclient SQUIDCLIENT]
                                 [--tmpdir TMPDIR]
                                 [--hostname HOSTNAME] [--bind BIND]
@@ -95,3 +95,4 @@ i want do get rid of squidclient and implement that in pure python to not have a
                                           transfer icp-svctime requests transfer svctime
                                           syscallsdisk syscallssocket swap unlink pagefaults
                                           selectloops cpu
+```
