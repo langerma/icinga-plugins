@@ -59,3 +59,34 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                                           warning threshold > critical threshold
                     --duration DURATION   e.g: 1h, 15m, 32d
 
+## check_squid.py
+
+a plugin to check different metrics from squid proxy server over squid client.
+i want do get rid of squidclient and implement that in pure python to not have a dependencie.
+
+
+usage: Icinga check for Squid Proxy Server [-h] [--squidclient SQUIDCLIENT]
+                                [--tmpdir TMPDIR]
+                                [--hostname HOSTNAME] [--bind BIND]
+                                [--port PORT] [--timeout TIMEOUT]
+                                [--squidclientargs SQUIDCLIENTARGS]
+                                [--interval INTERVAL] --query QUERY
+
+                                ptional arguments:
+                    -h, --help            show this help message and exit
+                    --squidclient SQUIDCLIENT
+                                          path to squidclient
+                    --tmpdir TMPDIR       temporary file dir
+                    --hostname HOSTNAME   Retrieve URL from cache on hostname. Default is
+                                          localhost.
+                    --bind BIND           Specify a local IP address to bind to. Default is
+                                          none.
+                    --port PORT           Port number of cache. Default is 3128.
+                    --timeout TIMEOUT     Timeout value (seconds) for read/write operations.
+                    --squidclientargs SQUIDCLIENTARGS
+                                          options for squidguard, like auth and password
+                    --interval INTERVAL   The polling interval in seconds used by icinga
+                    --query QUERY         The query to run: icp-packets icp-requests icp-
+                                          transfer icp-svctime requests transfer svctime
+                                          syscallsdisk syscallssocket swap unlink pagefaults
+                                          selectloops cpu
