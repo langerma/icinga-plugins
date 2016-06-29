@@ -65,14 +65,14 @@ a plugin to check different metrics from squid proxy server over squid client.
 i want do get rid of squidclient and implement that in pure python to not have a dependencie.
 
 
-usage: Icinga check for Squid Proxy Server [-h] [--squidclient SQUIDCLIENT]
+    usage: Icinga check for Squid Proxy Server [-h] [--squidclient SQUIDCLIENT]
                                 [--tmpdir TMPDIR]
                                 [--hostname HOSTNAME] [--bind BIND]
                                 [--port PORT] [--timeout TIMEOUT]
                                 [--squidclientargs SQUIDCLIENTARGS]
                                 [--interval INTERVAL] --query QUERY
 
-                                ptional arguments:
+                                optional arguments:
                     -h, --help            show this help message and exit
                     --squidclient SQUIDCLIENT
                                           path to squidclient
