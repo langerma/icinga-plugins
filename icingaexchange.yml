@@ -15,31 +15,39 @@ releases:
                 name: check_elasticsearch_cluster.py
                 url: "file:///check_elasticsearch_cluster.py"
                 description: "First release"
+                checksum: e73bacf2a973ad2c608c6c59b077f16d
             -
                 name: check_file_age.py
                 url: "file:///check_file_age.py"
                 description: "First Release"
+                checksum: e74ed06270668448bbd0cf9f8fcb2eac
             -
                 name: check_squid.py
                 url: "file:///check_squid.py"
                 description: "First release"
+                checksum: 7b60787cca3ce422f65e36e47750fc22
             -
                 name: check_bgp_neighbor.py
                 url: "file:///check_bgp_neighbor.py"
                 description: "First release"
+                checksum: c7525c309c4955cc17d20715ea7038ea
             -
                 name: check_ciscoasa_sslsessions.py
                 url: "file:///check_ciscoasa_sslsessions.py"
                 description: "First release"
+                checksum: d130f7d2abae84fd34aaee8134ee1b2b
             -
                 name: check_ciscowaas_sessions.py
                 url: "file:///check_ciscowaas_sessions.py"
                 description: "First release"
+                checksum: afc3b932538bb7ba1e6e34ee241ac060
             -
                 name: check_jenkins_jobs.py
                 url: "file:///check_jenkins_jobs.py"
                 description: "First release"
+                checksum: 0269d4f10d02b79c6d55eb6f15e559a4
             -
                 name: check_mem.sh
                 url: "file:///check_mem.sh"
                 description: "First release"
+                checksum: 14754297469a1334a411213e575edb99
