@@ -1,18 +1,45 @@
-name: check_elasticsearch_cluster.py
+name: langerma-plugins
 description: "file:///README.md"
 url: "https://github.com/langerma/icinga-plugins"
-tags: Elasticsearch
-vendor: Elasticsearch
-target: Elasticsearch
+tags: Elasticsearch Squid Jenkins Files Cisco
+vendor: Elasticsearch Cisco
+target: Elasticsearch Squid Jenkins Files Cisco
 type: Plugin
 license: gplv3
 releases:
     -
-        name: 1.0
-        description: "1.0 Release"
+        name: 1.1
+        description: "1.1 Release"
         files:
             -
                 name: check_elasticsearch_cluster.py
                 url: "file:///check_elasticsearch_cluster.py"
                 description: "First release"
-                checksum: e73bacf2a973ad2c608c6c59b077f16d
+            -
+                name: check_file_age.py
+                url: "file:///check_file_age.py"
+                description: "First Release"
+            -
+                name: check_squid.py
+                url: "file:///check_squid.py"
+                description: "First release"
+            -
+                name: check_bgp_neighbor.py
+                url: "file:///check_bgp_neighbor.py"
+                description: "First release"
+            -
+                name: check_ciscoasa_sslsessions.py
+                url: "file:///check_ciscoasa_sslsessions.py"
+                description: "First release"
+            -
+                name: check_ciscowaas_sessions.py
+                url: "file:///check_ciscowaas_sessions.py"
+                description: "First release"
+            -
+                name: check_jenkins_jobs.py
+                url: "file:///check_jenkins_jobs.py"
+                description: "First release"
+            -
+                name: check_mem.sh
+                url: "file:///check_mem.sh"
+                description: "First release"
