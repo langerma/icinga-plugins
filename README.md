@@ -22,6 +22,7 @@ check_file_age.py
 -------------------------
 a plugin to check file age with different methods:
 
+```
     usage: Icinga check for fileage [-h] --filename FILENAME
                                 [--method {modified,accessed,metadata}]
                                 [--warning WARNING] [--critical CRITICAL]
@@ -33,7 +34,7 @@ a plugin to check file age with different methods:
                                           Method what you want to check
                     --warning WARNING     Warning threshold in hours
                     --critical CRITICAL   Critical threshold in hours
-
+´´´
 check_elasticsearch_cluster.py
 -------------------------
 a plugin to check the health of an elasticsearch cluster,
