@@ -1,21 +1,25 @@
-# icinga-plugins
-
+icinga-plugins
+=========================
 My icinga plugins
 
 - cisco devices (bgp, sslsessions, waas sessions)
 - jenkins jobs
 - check_file_age.py which checks for the age of a file or path with different methods
 - check_elasticsearch_cluster.py checking the health of elasticsearch or fire up a query
+- check_squid.py check different metrics from squid.
 
-## check_jenkins_jobs.py
+check_jenkins_jobs.py
+-------------------------
 a script designed to get status information about jenkins jobs via API.
 script is not fully finished
 
-## cisco plugins
+cisco plugins
+-------------------------
 description is coming soon
+as of writing this I am going to migrate to argparse and move away from the command lib.
 
-## check_file_age.py
-
+check_file_age.py
+-------------------------
 a plugin to check file age with different methods:
 
     usage: Icinga check for fileage [-h] --filename FILENAME
@@ -30,8 +34,8 @@ a plugin to check file age with different methods:
                     --warning WARNING     Warning threshold in hours
                     --critical CRITICAL   Critical threshold in hours
 
-## check_elasticsearch_cluster.py
-
+check_elasticsearch_cluster.py
+-------------------------
 a plugin to check the health of an elasticsearch cluster,
 you also can fire up queries and set thresholds for example: failed logins, etc.
 
@@ -59,8 +63,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                                           warning threshold > critical threshold
                     --duration DURATION   e.g: 1h, 15m, 32d
 
-## check_squid.py
-
+check_squid.py
+-------------------------
 a plugin to check different metrics from squid proxy server over squid client.
 i want do get rid of squidclient and implement that in pure python to not have a dependencie.
 
