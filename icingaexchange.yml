@@ -1,9 +1,9 @@
 name: langerma-plugins
 description: "file:///README.md"
 url: "https://github.com/langerma/icinga-plugins"
-tags: Elasticsearch, Squid, Jenkins, Files, Cisco
-vendor: Elasticsearch, Cisco
-target: Elasticsearch, Squid, Jenkins, Files, Cisco
+tags: Elasticsearch, Squid, Jenkins, Files, Cisco, Oracle Storage Cell
+vendor: Elasticsearch, Cisco, Oracle
+target: Elasticsearch, Squid, Jenkins, Files, Cisco, Oracle
 type: Plugin
 license: gplv3
 releases:

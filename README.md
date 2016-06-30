@@ -96,3 +96,22 @@ i want do get rid of squidclient and implement that in pure python to not have a
                                           syscallsdisk syscallssocket swap unlink pagefaults
                                           selectloops cpu
 ```
+check_oracle_cellcli.py
+--------------------------
+you can check different metrics on oracle storagecell servers
+
+```
+    usage: Icinga check for cellcli [-h] [--dcli DCLI] [--hostname HOSTNAME]
+                                [--username USERNAME] [--query QUERY]
+                                [--warning WARNING] [--critical CRITICAL]
+
+                                optional arguments:
+                    -h, --help           show this help message and exit
+                    --dcli DCLI          path to dcli. /bin/dcli
+                    --hostname HOSTNAME  Cell hostname
+                    --username USERNAME  username for the cellcli connection
+                    --query QUERY        The query to run: cellcli -e list metriccurrent
+                                         CD_IO_UTIL
+                    --warning WARNING    warning threshold: default=90
+                    --critical CRITICAL  critical threshold: default=95
+```
