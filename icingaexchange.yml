@@ -51,3 +51,8 @@ releases:
                 url: "file:///check_mem.sh"
                 description: "First release"
                 checksum: 14754297469a1334a411213e575edb99
+            -
+                name: check_oracle_cellcli.py
+                url: "file:///check_oracle_cellcli.py"
+                description: "First release"
+                checksum: 7a46f3741235a20d0ce54732a4c4c202
