@@ -11,11 +11,11 @@
 ##########################################################
 
 from optparse import OptionParser
-from types import *
+#from types import *
 import sys
-import os
+#import os
 #import netsnmp
-import signal
+#import signal
 import commands
 
 snmpgetcmd = "/usr/bin/snmpget -v2c -Ov -c "
