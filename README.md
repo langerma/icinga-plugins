@@ -115,3 +115,20 @@ you can check different metrics on oracle storagecell servers
                     --warning WARNING    warning threshold: default=90
                     --critical CRITICAL  critical threshold: default=95
 ```
+check_oracle_rdsinfo.py
+--------------------------
+check the counters of rds-info on solaris
+
+```
+    usage: Icinga check for rds-info [-h] [--rdsinfo RDSINFO] --metric METRIC
+                                --warning WARNING --critical CRITICAL
+
+                                optional arguments:
+                    -h, --help           show this help message and exit
+                    --rdsinfo RDSINFO    path to rds-info. /usr/bin/rdsinfo
+                    --metric METRIC      metric you want to check e.g: send_queue_full or
+                                         ib_tx_ring_full
+                    --warning WARNING    warning threshold
+                    --critical CRITICAL  critical threshold
+```
+
