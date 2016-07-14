@@ -56,3 +56,8 @@ releases:
                 url: "file:///check_oracle_cellcli.py"
                 description: "First release"
                 checksum: 7a46f3741235a20d0ce54732a4c4c202
+            -
+                name: check_oracle_rdsinfo.py
+                url: "file:///check_oracle_rdsinfo.py"
+                description: "First Release"
+                checksum: 3658d589cf93239680dd21d66a214993
