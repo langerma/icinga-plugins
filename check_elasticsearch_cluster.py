@@ -77,6 +77,9 @@ def metric(data_url, index, query, critical, warning, invert, duration):
 
     ok_exit(message)
 
+######## get most hits from host or any field
+# {"query":{"filtered":{"query":{"query_string":{"query":"type:pfsense AND action:block","default_field":"_all"}},"filter":{"range":{"@timestamp":{"from":"now-12h","to":"now"}}}}},"from":0}
+
 # icinga returncode functions
 def critical_exit(message):
     print 'CRITICAL %s' % message
