@@ -1,22 +1,22 @@
 #!/bin/sh
 #
 # FeeBSD Memory Plugin for Nagios
-# 
+#
 # Copyright 2011 - eimar.koort@gmail.com
 # Version: 0.7
 # Date: 2013-02-12
 #
-# Based on: FBSD top command source code and 
+# Based on: FBSD top command source code and
 # "OpenBSD Memory Plugin for Nagios"
 # check_openbsd_mem.sh
 # Copyright 2008 - patrick@pahem.de
 #
 # Description:
 # This plugin checks the FreeBSD memory usage.
-# You can set warningand critical 
-# integer/precentage(%) values 
+# You can set warningand critical
+# integer/precentage(%) values
 # with -w and -c. With -p you can output
-# performance data and with -s generate alerts using 
+# performance data and with -s generate alerts using
 # swap usage
 #
 # Install:
@@ -28,7 +28,7 @@
 # /usr/local/libexec/nagios/check_fbsd_mem.sh -p -w 10% -c 15% swap
 # Will produce following output:
 # OK - Total: 2047M Used: 506M Active: 35M Inact: 156M  Wired: 239M Cache: 0M Buf: 213M Swap: 4096M SwUsed: 0M |FBSD_MEM=2047;506;35;156;239;0;213;4096;0
-# 
+#
 # If using nagiosgraph then add something like that into map file:
 ## Service type: freebsd memory
 ## output: Total: 2047M Used: 508M Active: 35M Inact: 158M  Wired: 239M Cache: 0M Buf: 213M Swap: 4096M SwUsed: 0M
@@ -90,7 +90,7 @@ while test -n "$1"; do
 	;;
 	-w)
 		if [ $(echo $2 | ${GREP} "%$") ]; then
-			percent_warn=$2 
+			percent_warn=$2
 		else
 			int_warn=$2
 		fi
@@ -98,7 +98,7 @@ while test -n "$1"; do
 	;;
 	-c)
 		if [ $(echo $2 | ${GREP} "%$") ]; then
-			percent_crit=$2 
+			percent_crit=$2
 		else
 			int_crit=$2
 		fi
@@ -107,7 +107,7 @@ while test -n "$1"; do
 	-p)
 		perf=1
 	;;
-	swap) 
+	swap)
 		measure_swap=1
 	;;
 	*)
@@ -129,7 +129,7 @@ ACTIVE_MEM=$(($AM_COUNT*$PAGESIZE/$TO_MB))
 #
 IA_COUNT="`${SYSCTL} vm.stats.vm.v_inactive_count |${NAWK} '{ print $2 }'`"
 INACT_MEM=$(($IA_COUNT*$PAGESIZE/$TO_MB))
-# 
+#
 WIRED_COUNT="`${SYSCTL} vm.stats.vm.v_wire_count |${NAWK} '{ print $2 }'`"
 WIRED_MEM=$(($WIRED_COUNT*$PAGESIZE/$TO_MB))
 #
@@ -173,7 +173,7 @@ fi
 if [ -n "$int_warn" ]; then
 	WARN="$int_warn"
 fi
-# integer critical 
+# integer critical
 if [ -n "$int_crit" ]; then
 	CRIT="$int_crit"
 fi
@@ -218,7 +218,7 @@ else
 			echo -n "WARNING - $OUTPUT"
 			exit $STATE_WARNING
 		fi
-	fi 
+    fi
 fi
 # output for STATE_OK
 echo -n "OK - $OUTPUT"
