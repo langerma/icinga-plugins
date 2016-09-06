@@ -19,13 +19,14 @@ import urllib
 import argparse
 
 # icinga returncode vars
-EXIT_OK         = 0
-EXIT_WARNING    = 1
-EXIT_CRITICAL   = 2
-EXIT_UNKNOWN    = 3
+EXIT_OK = 0
+EXIT_WARNING = 1
+EXIT_CRITICAL = 2
+EXIT_UNKNOWN = 3
 
 # check the health
 def health(data_url):
+    '''checks the general health of the elastic cluster'''
     es = json.load(urllib.urlopen(str(data_url) + '/_cluster/health'))
     icingaout = 'timed_out:%s;nodes:%s;data_nodes:%s;active_primary_shards%s;active_shards:%s;relocating_shards:%s;initializing_shards:%s;unassigned_shards:%s;' \
     % (es['timed_out'],es['number_of_nodes'],es['number_of_data_nodes'],es['active_primary_shards'],es['active_shards'],es['relocating_shards'],es['initializing_shards'],es['unassigned_shards'])
@@ -78,22 +79,30 @@ def metric(data_url, index, query, critical, warning, invert, duration):
     ok_exit(message)
 
 ######## get most hits from host or any field
-# {"query":{"filtered":{"query":{"query_string":{"query":"type:pfsense AND action:block","default_field":"_all"}},"filter":{"range":{"@timestamp":{"from":"now-12h","to":"now"}}}}},"from":0}
+# {"query":{"filtered":{"query":{"query_string":
+#   {"query":"type:pfsense AND action:block","default_field":"_all"}},
+#       "filter":{"range":{"@timestamp":{"from":"now-12h","to":"now"}}}}},
+# "from":0}
+########
 
 # icinga returncode functions
 def critical_exit(message):
+    '''returns icinga critical'''
     print 'CRITICAL %s' % message
     sys.exit(EXIT_CRITICAL)
 
 def warning_exit(message):
+    '''returns icinga warning'''
     print 'WARNING %s' % message
     sys.exit(EXIT_WARNING)
 
 def ok_exit(message):
+    '''returns icinga ok'''
     print 'OK %s' % message
     sys.exit(EXIT_OK)
 
 def unknown_exit(message):
+    '''returns icinga unknown'''
     print 'UNKNOWN %s' % message
     sys.exit(EXIT_UNKNOWN)
 
