@@ -1,22 +1,25 @@
 #!/bin/env python
+'''plugin to check the cli command and gether some performance data'''
 
 import sys
 import argparse
 import subprocess
 
 # icinga returncode vars
-EXIT_OK         = 0
-EXIT_WARNING    = 1
-EXIT_CRITICAL   = 2
-EXIT_UNKNOWN    = 3
+EXIT_OK = 0
+EXIT_WARNING = 1
+EXIT_CRITICAL = 2
+EXIT_UNKNOWN = 3
 
 def perfdata(outputList):
+    '''perfdata output'''
     perfdata = "|"
     for element in outputList:
         perfdata = perfdata+str(element[2])+"_"+str(element[1])+"="+str(element[3])+str(element[4])+";"+str(args.warning)+";"+str(args.critical)+" "
     print perfdata
 
 def message(outputList):
+    '''output of the status for icinga'''
     for element in outputList:
         if "CRITICAL" in element:
             print '%s is %s because %s is %s%s' %(element[2], element[5], element[1], element[3], element[4])
