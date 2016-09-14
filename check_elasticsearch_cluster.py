@@ -4,6 +4,7 @@
 #                          check_elasticsearch.py                               #
 #               script to check health of elasticsearch_cluster                 #
 #           it is also possible to check a query and set thresholds             #
+#                   and you can also analyze top hits                           #
 #################################################################################
 
 '''
@@ -84,6 +85,51 @@ def metric(data_url, index, query, critical, warning, invert, duration):
 #       "filter":{"range":{"@timestamp":{"from":"now-12h","to":"now"}}}}},
 # "from":0}
 ########
+
+########
+#curl -XPOST 'https://www.langerma.org/elasticsearch/_all/_search?pretty' -d '{
+#"size": 0,
+#"query": {
+#    "filtered": {
+#        "query": {
+#            "query_string":{
+#                                "query":"block",
+#                                "default_field":"action"
+#                        }
+#        },
+#        "filter":{
+#                "range":{
+#                        "@timestamp":{
+#                                "from":"now-1d",
+#                                "to":"now"
+#                        }
+#                }
+#        }
+#    }
+#},
+#"aggs": {
+#        "top-tags": {
+#            "terms": {
+#                "field": "dest_ip.raw",
+#                "size": 5
+#            },
+#            "aggs": {
+#                "top_tag_hits": {
+#                    "top_hits": {
+#                        "_source": {
+#                            "include": [
+#                                "dest_ip"
+#                            ]
+#                        },
+#                        "size" : 1
+#                    }
+#                }
+#            }
+#        }
+#    }
+#}'
+#########
+
 
 # icinga returncode functions
 def critical_exit(message):
