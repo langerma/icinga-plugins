@@ -40,8 +40,51 @@ def health(data_url):
         ok_exit(message)
 
 # check a query
-def metric(data_url, index, query, critical, warning, invert, duration):
-    searchstring = '{\
+def metric(data_url, index, query, critical, warning, invert, duration, top):
+    if top is not None:
+        searchstring = '{\
+                "size": 0,\
+                "query": {\
+                    "filtered": {\
+                        "query": {\
+                            "query_string":{\
+                                "query":"block",\
+                                "default_field":"action"\
+                            }\
+                        },\
+                        "filter":{\
+                            "range":{\
+                                "@timestamp":{\
+                                    "from":"now-1d",\
+                                    "to":"now"\
+                                }\
+                            }\
+                        }\
+                    }\
+                },\
+                "aggs": {\
+                    "top-tags": {\
+                        "terms": {\
+                            "field": "dest_ip.raw",\
+                            "size": 5\
+                        },\
+                        "aggs": {\
+                            "top_tag_hits": {\
+                                "top_hits": {\
+                                    "_source": {\
+                                        "include": [\
+                                            "dest_ip"\
+                                        ]\
+                                    },\
+                                    "size" : 1\
+                                }\
+                            }\
+                        }\
+                    }\
+                }\
+            }'
+    else:
+        searchstring = '{\
             "query":{\
                 "filtered":{\
                     "query":{ \
@@ -86,51 +129,6 @@ def metric(data_url, index, query, critical, warning, invert, duration):
 # "from":0}
 ########
 
-########
-#curl -XPOST 'https://www.langerma.org/elasticsearch/_all/_search?pretty' -d '{
-#"size": 0,
-#"query": {
-#    "filtered": {
-#        "query": {
-#            "query_string":{
-#                                "query":"block",
-#                                "default_field":"action"
-#                        }
-#        },
-#        "filter":{
-#                "range":{
-#                        "@timestamp":{
-#                                "from":"now-1d",
-#                                "to":"now"
-#                        }
-#                }
-#        }
-#    }
-#},
-#"aggs": {
-#        "top-tags": {
-#            "terms": {
-#                "field": "dest_ip.raw",
-#                "size": 5
-#            },
-#            "aggs": {
-#                "top_tag_hits": {
-#                    "top_hits": {
-#                        "_source": {
-#                            "include": [
-#                                "dest_ip"
-#                            ]
-#                        },
-#                        "size" : 1
-#                    }
-#                }
-#            }
-#        }
-#    }
-#}'
-#########
-
-
 # icinga returncode functions
 def critical_exit(message):
     '''returns icinga critical'''
@@ -165,6 +163,7 @@ if __name__ == '__main__':
     parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
     parser.add_argument('--invert', action='store_true', help='Invert the check so that an alert is triggered if the value falls below the threshold. Invert is implied if warning threshold > critical threshold')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
+    parser.add_argument('--top', type=int, help='display top hits for query')
     args = parser.parse_args()
     try:
         data_url = "http://" + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
@@ -172,6 +171,6 @@ if __name__ == '__main__':
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration)
+        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration, args.top)
     else:
         health(data_url)
