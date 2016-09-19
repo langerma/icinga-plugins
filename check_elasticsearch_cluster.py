@@ -40,51 +40,9 @@ def health(data_url):
         ok_exit(message)
 
 # check a query
-def metric(data_url, index, query, critical, warning, invert, duration, top):
-    if top is not None:
-        searchstring = '{\
-                "size": 0,\
-                "query": {\
-                    "filtered": {\
-                        "query": {\
-                            "query_string":{\
-                                "query":"block",\
-                                "default_field":"action"\
-                            }\
-                        },\
-                        "filter":{\
-                            "range":{\
-                                "@timestamp":{\
-                                    "from":"now-1d",\
-                                    "to":"now"\
-                                }\
-                            }\
-                        }\
-                    }\
-                },\
-                "aggs": {\
-                    "top-tags": {\
-                        "terms": {\
-                            "field": "dest_ip.raw",\
-                            "size": 5\
-                        },\
-                        "aggs": {\
-                            "top_tag_hits": {\
-                                "top_hits": {\
-                                    "_source": {\
-                                        "include": [\
-                                            "dest_ip"\
-                                        ]\
-                                    },\
-                                    "size" : 1\
-                                }\
-                            }\
-                        }\
-                    }\
-                }\
-            }'
-    else:
-        searchstring = '{\
+def metric(data_url, index, query, critical, warning, invert, duration, top, field):
+    infodata = '\n'
+    searchstring = '{\
             "query":{\
                 "filtered":{\
                     "query":{ \
@@ -105,29 +63,60 @@ def metric(data_url, index, query, critical, warning, invert, duration, top):
             },\
             "from":0}'
 
-    query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
-    hits = int(query_data['hits']['total'])
-    message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
+    try:
+        if top:
+            searchstring = '{\
+                "size": 0,\
+                "query": {\
+                    "filtered": {\
+                        "query": {\
+                            "query_string":{\
+                                "query":"' + query + '",\
+                                "default_field":"action"\
+                            }\
+                        },\
+                        "filter":{\
+                            "range":{\
+                                "@timestamp":{\
+                                    "from":"now' + duration + '",\
+                                    "to":"now"\
+                                }\
+                            }\
+                        }\
+                    }\
+                },\
+                "aggs": {\
+                    "top-tags": {\
+                        "terms": {\
+                            "field": "' + field + '",\
+                            "size":' + top + '\
+                        }\
+                    }\
+                }\
+            }'
+            query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+            hits = int(query_data['hits']['total'])
+            for info in query_data['aggregations']['top-tags']['buckets']:
+                infodata = infodata + str(field)+'_'+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
+            message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
+        else:
+            query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+            hits = int(query_data['hits']['total'])
+            message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
 
-    if invert:
-        if hits < critical:
-            critical_exit(message)
-        if hits < warning:
-            warning_exit(message)
-    else:
-        if hits > critical:
-            critical_exit(message)
-        if hits > warning:
-            warning_exit(message)
-
-    ok_exit(message)
-
-######## get most hits from host or any field
-# {"query":{"filtered":{"query":{"query_string":
-#   {"query":"type:pfsense AND action:block","default_field":"_all"}},
-#       "filter":{"range":{"@timestamp":{"from":"now-12h","to":"now"}}}}},
-# "from":0}
-########
+        if invert:
+            if hits < critical:
+                critical_exit(message)
+            if hits < warning:
+                warning_exit(message)
+        else:
+            if hits > critical:
+                critical_exit(message)
+            if hits > warning:
+                warning_exit(message)
+        ok_exit(message)
+    except:
+        unknown_exit("something went wrong")
 
 # icinga returncode functions
 def critical_exit(message):
@@ -164,6 +153,7 @@ if __name__ == '__main__':
     parser.add_argument('--invert', action='store_true', help='Invert the check so that an alert is triggered if the value falls below the threshold. Invert is implied if warning threshold > critical threshold')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
     parser.add_argument('--top', type=int, help='display top hits for query')
+    parser.add_argument('--field', help='ame of the field you want to have in your top analysis')
     args = parser.parse_args()
     try:
         data_url = "http://" + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
@@ -171,6 +161,6 @@ if __name__ == '__main__':
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration, args.top)
+        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration, args.top, args.field)
     else:
         health(data_url)
