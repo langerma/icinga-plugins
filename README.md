@@ -46,7 +46,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                                 [--index INDEX] [--query QUERY]
                                 [--critical CRITICAL]
                                 [--warning WARNING] [--invert]
-                                [--duration DURATION]
+                                [--duration DURATION] [--top TOP]
+                                [--field FIELD]
 
                                 optional arguments:
                     -h, --help            show this help message and exit
@@ -63,6 +64,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                                           value falls below the threshold. Invert is implied if
                                           warning threshold > critical threshold
                     --duration DURATION   e.g: 1h, 15m, 32d
+                    --top TOP             display top hits for query
+                    --field FIELD         Name of the field you want to have in your top analysis
 ```
 check_squid.py
 -------------------------
