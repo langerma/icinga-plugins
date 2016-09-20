@@ -64,7 +64,7 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
             "from":0}'
 
     try:
-        if top:
+        if top is not None:
             searchstring = '{\
                 "size": 0,\
                 "query": {\
@@ -89,7 +89,7 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                     "top-tags": {\
                         "terms": {\
                             "field": "' + field + '",\
-                            "size":' + top + '\
+                            "size":' + int(top) + '\
                         }\
                     }\
                 }\
