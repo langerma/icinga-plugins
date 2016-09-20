@@ -72,7 +72,7 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                         "query": {\
                             "query_string":{\
                                 "query":"' + query + '",\
-                                "default_field":"action"\
+                                "default_field":"_all"\
                             }\
                         },\
                         "filter":{\
