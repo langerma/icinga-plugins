@@ -152,8 +152,8 @@ if __name__ == '__main__':
     parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
     parser.add_argument('--invert', action='store_true', help='Invert the check so that an alert is triggered if the value falls below the threshold. Invert is implied if warning threshold > critical threshold')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
-    parser.add_argument('--top', type=int, help='display top hits for query')
-    parser.add_argument('--field', help='ame of the field you want to have in your top analysis')
+    parser.add_argument('--top', type=int, help='Display top hits for query')
+    parser.add_argument('--field', help='Name of the field you want to have in your top analysis')
     args = parser.parse_args()
     try:
         data_url = "http://" + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
