@@ -63,60 +63,57 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
             },\
             "from":0}'
 
-    try:
-        if top is not None:
-            searchstring = '{\
-                "size": 0,\
-                "query": {\
-                    "filtered": {\
-                        "query": {\
-                            "query_string":{\
-                                "query":"' + query + '",\
-                                "default_field":"_all"\
-                            }\
-                        },\
-                        "filter":{\
-                            "range":{\
-                                "@timestamp":{\
-                                    "from":"now' + duration + '",\
-                                    "to":"now"\
-                                }\
-                            }\
+    if top is not None:
+        searchstring = '{\
+            "size": 0,\
+            "query": {\
+                "filtered": {\
+                    "query": {\
+                        "query_string":{\
+                            "query":"' + query + '",\
+                            "default_field":"_all"\
                         }\
-                    }\
-                },\
-                "aggs": {\
-                    "top-tags": {\
-                        "terms": {\
-                            "field": "' + field + '",\
-                            "size":' + int(top) + '\
+                    },\
+                    "filter":{\
+                        "range":{\
+                            "@timestamp":{\
+                                "from":"now' + duration + '",\
+                                "to":"now"\
+                            }\
                         }\
                     }\
                 }\
-            }'
-            query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
-            hits = int(query_data['hits']['total'])
-            for info in query_data['aggregations']['top-tags']['buckets']:
-                infodata = infodata + str(field)+'_'+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
-            message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
-        else:
-            query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
-            hits = int(query_data['hits']['total'])
-            message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
+            },\
+            "aggs": {\
+                "top-tags": {\
+                    "terms": {\
+                        "field": "' + field + '",\
+                        "size":' + int(top) + '\
+                    }\
+                }\
+            }\
+        }'
+        query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+        hits = int(query_data['hits']['total'])
+        for info in query_data['aggregations']['top-tags']['buckets']:
+            infodata = infodata + str(field)+'_'+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
+        message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
+    else:
+        query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+        hits = int(query_data['hits']['total'])
+        message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
 
-        if invert:
-            if hits < critical:
-                critical_exit(message)
-            if hits < warning:
-                warning_exit(message)
-        else:
-            if hits > critical:
-                critical_exit(message)
-            if hits > warning:
-                warning_exit(message)
-        ok_exit(message)
-    except:
-        unknown_exit("something went wrong")
+    if invert:
+        if hits < critical:
+            critical_exit(message)
+        if hits < warning:
+            warning_exit(message)
+    else:
+        if hits > critical:
+            critical_exit(message)
+        if hits > warning:
+            warning_exit(message)
+    ok_exit(message)
 
 # icinga returncode functions
 def critical_exit(message):
