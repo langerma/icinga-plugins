@@ -65,7 +65,6 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
 
     if top is not None:
         searchstring = '{\
-            "size": 0,\
             "query": {\
                 "filtered": {\
                     "query": {\
@@ -77,7 +76,7 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                     "filter":{\
                         "range":{\
                             "@timestamp":{\
-                                "from":"now' + duration + '",\
+                                "from":"now-' + duration + '",\
                                 "to":"now"\
                             }\
                         }\
@@ -88,15 +87,15 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                 "top-tags": {\
                     "terms": {\
                         "field": "' + field + '",\
-                        "size":' + int(top) + '\
+                        "size":' + str(top) + '\
                     }\
                 }\
-            }\
-        }'
+            },\
+            "from":0}'
         query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
         hits = int(query_data['hits']['total'])
         for info in query_data['aggregations']['top-tags']['buckets']:
-            infodata = infodata + str(field)+'_'+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
+            infodata = infodata + str(field)+' '+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
         message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
     else:
         query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
@@ -149,7 +148,7 @@ if __name__ == '__main__':
     parser.add_argument('--warning', type=int, help='Warning threshold, e.g. 1, 20')
     parser.add_argument('--invert', action='store_true', help='Invert the check so that an alert is triggered if the value falls below the threshold. Invert is implied if warning threshold > critical threshold')
     parser.add_argument('--duration', default='5m', help='e.g: 1h, 15m, 32d')
-    parser.add_argument('--top', type=int, help='Display top hits for query')
+    parser.add_argument('--top', help='Display top hits for query')
     parser.add_argument('--field', help='Name of the field you want to have in your top analysis')
     args = parser.parse_args()
     try:
