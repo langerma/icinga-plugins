@@ -34,7 +34,7 @@
 ## output: Total: 2047M Used: 508M Active: 35M Inact: 158M  Wired: 239M Cache: 0M Buf: 213M Swap: 4096M SwUsed: 0M
 ## perfdata: FBSD_MEM=2047;508;35;158;239;0;213;4096;0
 #/perfdata:FBSD_MEM=([\d]+);([\d]+);([\d]+);([\d]+);([\d]+);([\d]+);([\d]+);\d+;([\d]+)/
-#and push @s, [ 'ram',
+# and push @s, [ 'ram',
 #                [ 'total', GAUGE, $1*1024**2 ],
 #                [ 'used', GAUGE, $2*1024**2 ],
 #                [ 'act', GAUGE, $3*1024**2 ],
