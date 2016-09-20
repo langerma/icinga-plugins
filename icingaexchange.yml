@@ -8,14 +8,14 @@ type: Plugin
 license: gplv3
 releases:
     -
-        name: 1.1
-        description: "1.1 Release"
+        name: 1.2
+        description: "1.2 Release"
         files:
             -
                 name: check_elasticsearch_cluster.py
                 url: "file:///check_elasticsearch_cluster.py"
-                description: "First release"
-                checksum: e73bacf2a973ad2c608c6c59b077f16d
+                description: "Ability to show top terms in check"
+                checksum: 614e2b26d20b31f8d0956c0b5d737078
             -
                 name: check_file_age.py
                 url: "file:///check_file_age.py"
