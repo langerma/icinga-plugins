@@ -61,29 +61,10 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                     }\
                 }\
             },\
-            "from":0}'
+            '
 
     if top is not None:
-        searchstring = '{\
-            "query": {\
-                "filtered": {\
-                    "query": {\
-                        "query_string":{\
-                            "query":"' + query + '",\
-                            "default_field":"_all"\
-                        }\
-                    },\
-                    "filter":{\
-                        "range":{\
-                            "@timestamp":{\
-                                "from":"now-' + duration + '",\
-                                "to":"now"\
-                            }\
-                        }\
-                    }\
-                }\
-            },\
-            "aggs": {\
+        searchstring += '"aggs": {\
                 "top-tags": {\
                     "terms": {\
                         "field": "' + field + '",\
@@ -92,6 +73,9 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                 }\
             },\
             "from":0}'
+    else:
+        searchstring += '"from":0}'
+
     query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
     try:
