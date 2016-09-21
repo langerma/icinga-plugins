@@ -92,15 +92,14 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
                 }\
             },\
             "from":0}'
-        query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
-        hits = int(query_data['hits']['total'])
+    query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+    hits = int(query_data['hits']['total'])
+    try:
         for info in query_data['aggregations']['top-tags']['buckets']:
             infodata = infodata + str(field)+' '+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
-        message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
-    else:
-        query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
-        hits = int(query_data['hits']['total'])
-        message = ': "%s" returned %s (over %s) | query=%s; warning=%s; critical=%s' % (query, hits, duration, hits, warning, critical)
+    except:
+        infodata = ''
+    message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
 
     if invert:
         if hits < critical:
