@@ -1,7 +1,7 @@
 #!/bin/python
 
 #################################################################################
-#                          check_elasticsearch.py                               #
+#                       check_elasticsearch_cluster.py                          #
 #               script to check health of elasticsearch_cluster                 #
 #           it is also possible to check a query and set thresholds             #
 #                   and you can also analyze top hits                           #
