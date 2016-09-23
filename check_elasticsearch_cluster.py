@@ -29,7 +29,7 @@ EXIT_UNKNOWN = 3
 def health(data_url):
     '''checks the general health of the elastic cluster'''
     es = json.load(urllib.urlopen(str(data_url) + '/_cluster/health'))
-    icingaout = 'timed_out:%s;nodes:%s;data_nodes:%s;active_primary_shards%s;active_shards:%s;relocating_shards:%s;initializing_shards:%s;unassigned_shards:%s;' \
+    icingaout = 'timed_out:%s;nodes:%s;data_nodes:%s;active_primary_shards:%s;active_shards:%s;relocating_shards:%s;initializing_shards:%s;unassigned_shards:%s;' \
     % (es['timed_out'],es['number_of_nodes'],es['number_of_data_nodes'],es['active_primary_shards'],es['active_shards'],es['relocating_shards'],es['initializing_shards'],es['unassigned_shards'])
     message = ': Cluster: %s | %s' % (es['status'], icingaout)
     if es["status"] == "red":
