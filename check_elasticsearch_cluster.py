@@ -34,7 +34,7 @@ def health(data_url):
     message = ': Cluster: %s | %s' % (es['status'], icingaout)
     if es["status"] == "red":
         critical_exit(message)
-    elif es["status"] == "orange":
+    elif es["status"] == "yellow":
         warning_exit(message)
     elif es["status"] == "green":
         ok_exit(message)
