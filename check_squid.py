@@ -1,9 +1,9 @@
 #!/bin/python
 
-#################################################################################
-#                                 check_squid.py                                #
-#                        checks different squid metrics                         #
-#################################################################################
+##################################
+#       check_squid.py           #
+# checks different squid metrics #
+##################################
 
 '''
 
@@ -20,10 +20,11 @@ import argparse
 import subprocess
 
 # icinga returncode vars
-EXIT_OK         = 0
-EXIT_WARNING    = 1
-EXIT_CRITICAL   = 2
-EXIT_UNKNOWN    = 3
+EXIT_OK = 0
+EXIT_WARNING = 1
+EXIT_CRITICAL = 2
+EXIT_UNKNOWN = 3
+
 
 def cache_stats(stats, hostname, tmpdir):
     try:
@@ -36,27 +37,31 @@ def cache_stats(stats, hostname, tmpdir):
     except:
         pass
 
-def fetch_cached_stats(hostname, pollerInterval, tmpdir):
+
+def fetch_cached_stats(hostname, pollerinterval, tmpdir):
     mtime = 0
-    cacheFile = tmpdir + '/' + hostname
-    cacheLifetime = pollerInterval * 0.75
+    cachefile = tmpdir + '/' + hostname
+    cachelifetime = pollerinterval * 0.75
     now = time.time()
     try:
-        mtime = os.stat(cacheFile).st_mtime
-        if 0 < mtime > (now - cacheLifetime):
-            cache = open(cacheFile, 'r')
+        mtime = os.stat(cachefile).st_mtime
+        if 0 < mtime > (now - cachelifetime):
+            cache = open(cachefile, 'r')
             stats = cPickle.load(cache)
             cache.close()
             return stats
     except:
         pass
 
-def fetch_stats(argsList):
-    squid5min = subprocess.Popen(argsList + ['mgr:5min'], stdout=subprocess.PIPE).communicate()[0]
+
+def fetch_stats(argslist):
+    squid5min = subprocess.Popen(argslist + ['mgr:5min'],
+                                 stdout=subprocess.PIPE).communicate()[0]
     if len(squid5min):
         return squid5min
     else:
         return False
+
 
 def filter_stats(stats, query):
     queries = {
@@ -160,33 +165,34 @@ def filter_stats(stats, query):
             "cpu_usage",
         ],
     }
-    filteredStats = {}
+    filteredstats = {}
     for item in queries[query]:
-        if stats.has_key(item):
-            filteredStats[item] = stats[item]
-    return filteredStats
+        if item in stats:
+            filteredstats[item] = stats[item]
+    return filteredstats
 
 
 def output_stats(stats):
-    numStats = len(stats)
+    numstats = len(stats)
     for stat in stats:
-        numStats -= 1
+        numstats -= 1
         output = "%s:" % (stat.replace('.', '_'), )
         if stats[stat] == "U":
             output = output + "U"
         else:
             output = output + ("%.2f" % (float(stats[stat]), ))
         sys.stdout.write(output)
-        if numStats > 0:
+        if numstats > 0:
             sys.stdout.write(" ")
 
-def parse_stats(commandOutput, stats):
-    for line in commandOutput.splitlines():
+
+def parse_stats(commandoutput, stats):
+    for line in commandoutput.splitlines():
         try:
             name, value = line.split(" = ")
         except:
             continue
-        if stats.has_key(name):
+        if name in stats:
             length = value.find('/')
             if length < 0:
                 length = value.find(' ')
@@ -271,18 +277,21 @@ stats = {
     "cpu_usage": 0
 }
 
-# icinga returncode functions
+
 def critical_exit(message):
     print 'CRITICAL %s' % message
     sys.exit(EXIT_CRITICAL)
+
 
 def warning_exit(message):
     print 'WARNING %s' % message
     sys.exit(EXIT_WARNING)
 
+
 def ok_exit(message):
     print 'OK %s' % message
     sys.exit(EXIT_OK)
+
 
 def unknown_exit(message):
     print 'UNKNOWN %s' % message
@@ -291,25 +300,59 @@ def unknown_exit(message):
 if __name__ == '__main__':
     # request parameters for script
     parser = argparse.ArgumentParser('Icinga check for Squid Proxy Server')
-    parser.add_argument('--squidclient', default='/usr/local/sbin/squidclient', help='path to squidclient')
-    parser.add_argument('--tmpdir', default='/tmp/squid-stats', help='temporary file dir')
-    parser.add_argument('--hostname', default='localhost', help='Retrieve URL from cache on hostname.  Default is localhost.')
-    parser.add_argument('--bind', default=None, help='Specify a local IP address to bind to.  Default is none.')
-    parser.add_argument('--port', type=int, default=3128, help='Port number of cache.  Default is 3128.')
-    parser.add_argument('--timeout', type=int, default=10, help='Timeout value (seconds) for read/write operations.')
-    parser.add_argument('--squidclientargs', default='', help='options for squidguard, like auth and password')
-    parser.add_argument('--interval', type=int, default=300, help='The polling interval in seconds used by icinga')
-    parser.add_argument('--query', required=True, help="The query to run: icp-packets icp-requests icp-transfer icp-svctime requests transfer svctime syscallsdisk syscallssocket swap unlink pagefaults selectloops cpu")
+    parser.add_argument('--squidclient',
+                        default='/usr/local/sbin/squidclient',
+                        help='path to squidclient')
+    parser.add_argument('--tmpdir',
+                        default='/tmp/squid-stats',
+                        help='temporary file dir')
+    parser.add_argument('--hostname',
+                        default='localhost',
+                        help='Retrieve URL from cache on hostname. \
+                                Default is localhost.')
+    parser.add_argument('--bind',
+                        default=None,
+                        help='Specify a local IP address to bind to. \
+                                Default is none.')
+    parser.add_argument('--port',
+                        type=int,
+                        default=3128,
+                        help='Port number of cache.  Default is 3128.')
+    parser.add_argument('--timeout',
+                        type=int,
+                        default=10,
+                        help='Timeout value (seconds) for read/write \
+                                operations.')
+    parser.add_argument('--squidclientargs',
+                        default='',
+                        help='options for squidguard, like auth and password')
+    parser.add_argument('--interval',
+                        type=int,
+                        default=300,
+                        help='The polling interval in seconds used by icinga')
+    parser.add_argument('--query',
+                        required=True,
+                        help="The query to run: icp-packets \
+                                icp-requests icp-transfer \
+                                icp-svctime requests transfer \
+                                svctime syscallsdisk syscallssocket \
+                                swap unlink pagefaults selectloops cpu")
     args = parser.parse_args()
 
     cachedStats = fetch_cached_stats(args.hostname, args.interval, args.tmpdir)
 
-    argsList = [str(args.squidclient), '-h', str(args.hostname), '-l', str(args.bind), '-p', args.port]
+    argsList = [str(args.squidclient),
+                '-h',
+                str(args.hostname),
+                '-l',
+                str(args.bind),
+                '-p',
+                args.port]
     if cachedStats:
         output_stats(filter_stats(cachedStats, args.query))
     else:
         squid5min = fetch_stats(argsList)
-        if squid5min == False:
+        if not squid5min:
             for stat in stats:
                 stats[stat] = "U"
         else:
