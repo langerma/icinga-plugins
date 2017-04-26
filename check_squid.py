@@ -310,10 +310,6 @@ if __name__ == '__main__':
                         default='localhost',
                         help='Retrieve URL from cache on hostname. \
                                 Default is localhost.')
-    parser.add_argument('--bind',
-                        default=None,
-                        help='Specify a local IP address to bind to. \
-                                Default is none.')
     parser.add_argument('--port',
                         type=int,
                         default=3128,
@@ -344,8 +340,6 @@ if __name__ == '__main__':
     argsList = [str(args.squidclient),
                 '-h',
                 str(args.hostname),
-                '-l',
-                str(args.bind),
                 '-p',
                 str(args.port)]
     if cachedStats:
