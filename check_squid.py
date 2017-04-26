@@ -180,7 +180,7 @@ def output_stats(stats):
         if stats[stat] == "U":
             output = output + "U"
         else:
-            output = output + ("%.2f" % (float(stats[stat]), ))
+            output = output + ("%.4f" % (float(stats[stat]), ))
         sys.stdout.write(output)
         if numstats > 0:
             sys.stdout.write(" ")
