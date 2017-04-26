@@ -347,7 +347,7 @@ if __name__ == '__main__':
                 '-l',
                 str(args.bind),
                 '-p',
-                args.port]
+                str(args.port)]
     if cachedStats:
         output_stats(filter_stats(cachedStats, args.query))
     else:
