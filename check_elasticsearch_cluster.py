@@ -18,6 +18,7 @@ import sys
 import json
 import urllib
 import argparse
+import ssl
 
 # icinga returncode vars
 EXIT_OK = 0
@@ -124,6 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--host', required=True, help='elasticsearch host')
     parser.add_argument('--port', type=int, default=9200, help='port that elasticsearch is running on (eg. 9200)')
     parser.add_argument('--ssl', action='store_true', help='Connect using HTTPS')
+    parser.add_argument('--ssl-insecure', action='store_true', help='Do not verify HTTPS cert')
     parser.add_argument('--ssl-cert', help='client cert for HTTPS auth')
     parser.add_argument('--ssl-key', help='client key for HTTPS auth')
     parser.add_argument('--uri', default='', help='Uri for elasticsearch for example /elasticsearch')
@@ -142,7 +144,12 @@ if __name__ == '__main__':
     if args.ssl or args.ssl_cert or args.ssl_key:
         scheme = "https://"
 
-    urlopener = urllib.URLopener(key_file=args.ssl_key, cert_file=args.ssl_cert)
+    ctx = ssl.create_default_context()
+    if args.ssl_insecure:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+    urlopener = urllib.URLopener(context=ctx, key_file=args.ssl_key, cert_file=args.ssl_cert)
 
     try:
         data_url = scheme + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
