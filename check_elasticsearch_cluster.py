@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 
 #################################################################################
 #                       check_elasticsearch_cluster.py                          #
@@ -26,12 +26,12 @@ EXIT_CRITICAL = 2
 EXIT_UNKNOWN = 3
 
 # check the health
-def health(data_url):
+def health(urlopener, data_url):
     '''checks the general health of the elastic cluster'''
-    es = json.load(urllib.urlopen(str(data_url) + '/_cluster/health'))
-    icingaout = 'timed_out:%s;nodes:%s;data_nodes:%s;active_primary_shards:%s;active_shards:%s;relocating_shards:%s;initializing_shards:%s;unassigned_shards:%s;' \
-    % (es['timed_out'],es['number_of_nodes'],es['number_of_data_nodes'],es['active_primary_shards'],es['active_shards'],es['relocating_shards'],es['initializing_shards'],es['unassigned_shards'])
-    message = ': Cluster: %s | %s' % (es['status'], icingaout)
+    es = json.load(urlopener.open(str(data_url) + '/_cluster/health'))
+    perfdata = 'nodes=%s data_nodes=%s active_primary_shards=%s active_shards=%s relocating_shards=%s initializing_shards=%s unassigned_shards=%s' \
+    % (es['number_of_nodes'],es['number_of_data_nodes'],es['active_primary_shards'],es['active_shards'],es['relocating_shards'],es['initializing_shards'],es['unassigned_shards'])
+    message = ': Cluster: %s. Timed out: %s | %s' % (es['status'], es['timed_out'], perfdata)
     if es["status"] == "red":
         critical_exit(message)
     elif es["status"] == "yellow":
@@ -40,7 +40,7 @@ def health(data_url):
         ok_exit(message)
 
 # check a query
-def metric(data_url, index, query, critical, warning, invert, duration, top, field):
+def metric(urlopener, data_url, index, query, critical, warning, invert, duration, top, field):
     infodata = '\n'
     searchstring = '{\
             "query":{\
@@ -63,7 +63,7 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
             },\
             '
 
-    if top is not None:
+    if top:
         searchstring += '"aggs": {\
                 "top-tags": {\
                     "terms": {\
@@ -76,14 +76,14 @@ def metric(data_url, index, query, critical, warning, invert, duration, top, fie
     else:
         searchstring += '"from":0}'
 
-    query_data = json.load(urllib.urlopen(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+    query_data = json.load(urlopener.open(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
     hits = int(query_data['hits']['total'])
     try:
         for info in query_data['aggregations']['top-tags']['buckets']:
             infodata = infodata + str(field)+' '+ str(info['key']) + ': has ' + str(info['doc_count']) + ' hits \n'
     except:
         infodata = ''
-    message = ': "%s" returned %s (over %s) %s| query=%s; warning=%s; critical=%s' % (query, hits, duration, infodata, hits, warning, critical)
+    message = ': "%s" returned %s (over %s) %s| query_hits=%s;%s;%s' % (query, hits, duration, infodata, hits, warning or '', critical or '')
 
     if invert:
         if hits < critical:
@@ -123,6 +123,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('Icinga check for elasticsearch')
     parser.add_argument('--host', required=True, help='elasticsearch host')
     parser.add_argument('--port', type=int, default=9200, help='port that elasticsearch is running on (eg. 9200)')
+    parser.add_argument('--ssl', action='store_true', help='Connect using HTTPS')
+    parser.add_argument('--ssl-cert', help='client cert for HTTPS auth')
+    parser.add_argument('--ssl-key', help='client key for HTTPS auth')
     parser.add_argument('--uri', default='', help='Uri for elasticsearch for example /elasticsearch')
     parser.add_argument('--command', default='health', choices=['health','metric'], help='check command')
     parser.add_argument('--index', default='logstash-*', help='the index you want to query for example logstash-*')
@@ -134,12 +137,19 @@ if __name__ == '__main__':
     parser.add_argument('--top', help='Display top hits for query')
     parser.add_argument('--field', help='Name of the field you want to have in your top analysis')
     args = parser.parse_args()
+
+    scheme = "http://"
+    if args.ssl or args.ssl_cert or args.ssl_key:
+        scheme = "https://"
+
+    urlopener = urllib.URLopener(key_file=args.ssl_key, cert_file=args.ssl_cert)
+
     try:
-        data_url = "http://" + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
+        data_url = scheme + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
     except:
         print "something went wrong with the url shit"
     # logic to call the right functions
     if args.command=="metric":
-        metric(data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration, args.top, args.field)
+        metric(urlopener, data_url, args.index, args.query, args.critical, args.warning, args.invert, args.duration, args.top, args.field)
     else:
-        health(data_url)
+        health(urlopener, data_url)
