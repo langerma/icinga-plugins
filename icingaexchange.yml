@@ -14,8 +14,8 @@ releases:
             -
                 name: check_elasticsearch_cluster.py
                 url: "file:///check_elasticsearch_cluster.py"
-                description: "Ability to show top terms in check"
-                checksum: 614e2b26d20b31f8d0956c0b5d737078
+                description: "ssl connection to elastic"
+                checksum: 2c22cb50a02017eb2e2d324ce4569cdd
             -
                 name: check_file_age.py
                 url: "file:///check_file_age.py"
