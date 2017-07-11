@@ -54,8 +54,8 @@ you also can fire up queries and set thresholds for example: failed logins, etc.
                     --host HOST           elasticsearch host
                     --port PORT           port that elasticsearch is running on (eg. 9200)
                     --ssl                 Connect using HTTPS
-                    --ssl-cert            client cert for HTTPS auth
-                    --ssl-key             client key for HTTPS auth
+                    --ssl-cert SSL-CERT   client cert for HTTPS auth
+                    --ssl-key  SSL-KEY    client key for HTTPS auth
                     --uri URI             Uri for elasticsearch for example /elasticsearch
                     --command {health,metric}
                                         check command
