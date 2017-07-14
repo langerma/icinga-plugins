@@ -77,7 +77,11 @@ def metric(urlopener, data_url, index, query, critical, warning, invert, duratio
     else:
         searchstring += '"from":0}'
 
-    query_data = json.load(urlopener.open(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+    try:
+        query_data = json.load(urlopener.open(str(data_url) + '/' + str(index) + '/_search?search_type=count' , data=searchstring))
+    except Exception as ex:
+        critical_exit("Error making the query: %s" % ex)
+
     hits = int(query_data['hits']['total'])
     try:
         for info in query_data['aggregations']['top-tags']['buckets']:
