@@ -144,12 +144,15 @@ if __name__ == '__main__':
     if args.ssl or args.ssl_cert or args.ssl_key:
         scheme = "https://"
 
-    ctx = ssl.create_default_context()
-    if args.ssl_insecure:
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+    try:
+        ctx = ssl.create_default_context()
+        if args.ssl_insecure:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
 
-    urlopener = urllib.URLopener(context=ctx, key_file=args.ssl_key, cert_file=args.ssl_cert)
+        urlopener = urllib.URLopener(context=ctx, key_file=args.ssl_key, cert_file=args.ssl_cert)
+    except AttributeError:
+        urlopener = urllib.URLopener()
 
     try:
         data_url = scheme + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
