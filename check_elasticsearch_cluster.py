@@ -118,6 +118,7 @@ def generateNotES5SearchString(query,duration,top,field):
         searchstring += '"from":0}'
     return searchstring
 
+
 # check a query
 def metric( data_url, index, query, critical, warning, invert, duration, top, field, es5,ctx=None):
     infodata = '\n'
@@ -134,7 +135,11 @@ def metric( data_url, index, query, critical, warning, invert, duration, top, fi
     else:
         request = urllib2.Request(requeststring,data=searchstring,Context=ctx,headers={'Content-type': 'application/json'})
 
-    query_data = json.load(urllib2.urlopen(request))
+    try:
+        query_data = json.load(urllib2.urlopen(request))
+    except Exception as ex:
+        critical_exit("Error making the query: %s" % ex)
+
     hits = int(query_data['hits']['total'])
     try:
         for info in query_data['aggregations']['top-tags']['buckets']:
