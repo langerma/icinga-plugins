@@ -223,7 +223,6 @@ if __name__ == '__main__':
 
     try:
         data_url = scheme + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
-        print "Dataurl:" + data_url
     except:
         print "something went wrong with the url shit"
     # logic to call the right functions
