@@ -34,7 +34,7 @@ def health( data_url, ctx=None):
     if ctx == None:
         request = urllib2.Request(str(data_url) + '_cluster/health')
     else:
-        request = urllib2.Request(str(data_url) + '_cluster/health',context=ctx)
+        request = urllib2.Request(str(data_url) + '_cluster/health')
 
     es = json.load(urllib2.urlopen(request))
     perfdata = 'nodes=%s data_nodes=%s active_primary_shards=%s active_shards=%s relocating_shards=%s initializing_shards=%s unassigned_shards=%s' \
@@ -118,23 +118,28 @@ def generateNotES5SearchString(query,duration,top,field):
         searchstring += '"from":0}'
     return searchstring
 
+
 # check a query
 def metric( data_url, index, query, critical, warning, invert, duration, top, field, es5,ctx=None):
     infodata = '\n'
 
     if es5:
         searchstring = generateES5SearchString(query,duration,top,field)
-        requeststring = str(data_url) + '/' + str(index) + '/_search?size=0'
+        requeststring = str(data_url) + str(index) + '/_search?size=0'
     else:
         searchstring = generateNotES5SearchString(query,duration,top,field)
-        requeststring = str(data_url) + '/' + str(index) + '/_search?search_type=count'
+        requeststring = str(data_url) + str(index) + '/_search?search_type=count'
 
     if ctx == None:
         request = urllib2.Request(requeststring,data=searchstring,headers={'Content-type': 'application/json'})
     else:
-        request = urllib2.Request(requeststring,data=searchstring,Context=ctx,headers={'Content-type': 'application/json'})
+        request = urllib2.Request(requeststring,data=searchstring,headers={'Content-type': 'application/json'})
 
-    query_data = json.load(urllib2.urlopen(request))
+    try:
+        query_data = json.load(urllib2.urlopen(request))
+    except Exception as ex:
+        critical_exit("Error making the query: %s" % ex)
+
     hits = int(query_data['hits']['total'])
     try:
         for info in query_data['aggregations']['top-tags']['buckets']:
@@ -217,7 +222,8 @@ if __name__ == '__main__':
 
 
     try:
-        data_url = scheme + str(args.host) + ":" + str(args.port) + str(args.uri)
+        data_url = scheme + str(args.host) + ":" + str(args.port) + "/" + str(args.uri)
+        print "Dataurl:" + data_url
     except:
         print "something went wrong with the url shit"
     # logic to call the right functions
