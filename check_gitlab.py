@@ -8,10 +8,6 @@
     first approach of checking build status via jenkins json api.
     for the moment it works but some work has to be done -->
     parameters and cli switches and shit. make it work, make it right, make it fast
-[langerma@at-sit-langerma ~ ]$ curl -s -k "https://gitlab.eb.lan.at/health_check.json?token=xxnLXzPDh5qAnmXAPJny"
-{"healthy":true,"message":"success"}%                                                          [langerma@at-sit-langerma ~ ]$ curl -s -k "https://gitlab.eb.lan.at/health_check/cache.json?token=xxnLXzPDh5qAnmXAPJny"
-{"healthy":true,"message":"success"}%                                                          [langerma@at-sit-langerma ~ ]$ curl -s -k "https://gitlab.eb.lan.at/health_check/database.json?token=xxnLXzPDh5qAnmXAPJny"
-
 """
 
 
